@@ -3,13 +3,14 @@ package sch.iot.onem2mapp;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -29,6 +30,8 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,20 +44,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public ToggleButton btnControl_Red;
     public ToggleButton btnControl_Green;
     public ToggleButton btnControl_Blue;
-    public Switch Switch_MQTT;
-    public TextView textViewData;
+    public SwitchCompat Switch_MQTT;
 
     // added by J. Yun, SCH Univ.
-    public TextView textLight;
     public TextView textDust;
     public TextView textPIR;
     public TextView textSound;
-    public TextView textUltrasonic;
-    public TextView textAccel;
     public TextView textTemp;
 
     public Handler handler;
-    public ToggleButton btnAddr_Set;
 
     private static CSEBase csebase = new CSEBase();
     private static AE ae = new AE();
@@ -67,36 +65,29 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String MQTT_Req_Topic = "";
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
-    private EditText EditText_Address =null;
-    private String Mobius_Address ="";
+    private EditText EditText_Address = null;
+    private String Mobius_Address = "";
 
     // Main
     public MainActivity() {
         handler = new Handler();
     }
+
     /* onCreate */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
 
-        btnRetrieve = findViewById(R.id.btnRetrieve);
         Switch_MQTT = findViewById(R.id.switch_mqtt);
         btnControl_Red = findViewById(R.id.btnControl_Red);
         btnControl_Green = findViewById(R.id.btnControl_Green);
         btnControl_Blue = findViewById(R.id.btnControl_Blue);
-        textViewData = findViewById(R.id.textViewData);
 
         // added by J. Yun, SCH Univ.
-        textLight = findViewById(R.id.textLight);
         textDust = findViewById(R.id.textDust);
         textPIR = findViewById(R.id.textPIR);
-        textSound = findViewById(R.id.textSound);
-        textUltrasonic = findViewById(R.id.textUltrasonic);
-        textAccel = findViewById(R.id.textAccel);
         textTemp = findViewById(R.id.textTemp);
 
-
-        btnRetrieve.setOnClickListener(this);
         Switch_MQTT.setOnCheckedChangeListener(this);
         btnControl_Red.setOnClickListener(this);
         btnControl_Green.setOnClickListener(this);
@@ -104,14 +95,59 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         // Create AE and Get AEID
         GetAEInfo();
+
+        Timer timer = new Timer();
+
+        TimerTask TT = new TimerTask() {
+            @Override
+            public void run() {
+                RetrieveRequest req;
+                req = new RetrieveRequest("dust");
+                req.setReceiver(new IReceived() {
+                    public void getResponseBody(final String msg) {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                textDust.setText(getContainerContentXML(msg));
+                            }
+                        });
+                    }
+                });
+                req.start();
+
+                req = new RetrieveRequest("temp");
+                req.setReceiver(new IReceived() {
+                    public void getResponseBody(final String msg) {
+                        handler.post(new Runnable() {
+                            public void run() {
+                                textTemp.setText(getContainerContentXML(msg));
+                            }
+                        });
+                    }
+                });
+                req.start();
+            }
+
+        };
+
+        timer.schedule(TT, 0, 3000); //Timer 실행
+
+//
+//        login.setOnClickListener(new Button.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                intent.putExtra("rpi_address", address.getText().toString());
+//                startActivity(intent);
+//            }
+//        });
     }
+
     /* AE Create for Androdi AE */
     public void GetAEInfo() {
-
         // You can put the IP address directly in code,
         // but also get it from EditText window
         // csebase.setInfo(Mobius_Address,"7579","Mobius","1883");
-        csebase.setInfo("203.253.128.161","7579","Mobius","1883");
+        csebase.setInfo("203.253.128.161", "7579", "Mobius", "1883");
 
         // AE Create for Android AE
         ae.setAppName("ncubeapp");
@@ -120,26 +156,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             public void getResponseBody(final String msg) {
                 handler.post(new Runnable() {
                     public void run() {
-                        Log.d(TAG, "** AE Create ResponseCode[" + msg +"]");
-                        if( Integer.parseInt(msg) == 201 ){
-                            MQTT_Req_Topic = "/oneM2M/req/Mobius2/"+ae.getAEid()+"_sub"+"/#";
-                            MQTT_Resp_Topic = "/oneM2M/resp/Mobius2/"+ae.getAEid()+"_sub"+"/json";
-                            Log.d(TAG, "ReqTopic["+ MQTT_Req_Topic+"]");
-                            Log.d(TAG, "ResTopic["+ MQTT_Resp_Topic+"]");
-                        }
-                        else { // If AE is Exist , GET AEID
+                        Log.d(TAG, "** AE Create ResponseCode[" + msg + "]");
+                        if (Integer.parseInt(msg) == 201) {
+                            MQTT_Req_Topic = "/oneM2M/req/Mobius2/" + ae.getAEid() + "_sub" + "/#";
+                            MQTT_Resp_Topic = "/oneM2M/resp/Mobius2/" + ae.getAEid() + "_sub" + "/json";
+                            Log.d(TAG, "ReqTopic[" + MQTT_Req_Topic + "]");
+                            Log.d(TAG, "ResTopic[" + MQTT_Resp_Topic + "]");
+                        } else { // If AE is Exist , GET AEID
                             aeRetrieveRequest aeRetrive = new aeRetrieveRequest();
                             aeRetrive.setReceiver(new IReceived() {
                                 public void getResponseBody(final String resmsg) {
-                                handler.post(new Runnable() {
-                                    public void run() {
-                                    Log.d(TAG, "** AE Retrive ResponseCode[" + resmsg +"]");
-                                    MQTT_Req_Topic = "/oneM2M/req/Mobius2/"+ae.getAEid()+"_sub"+"/#";
-                                    MQTT_Resp_Topic = "/oneM2M/resp/Mobius2/"+ae.getAEid()+"_sub"+"/json";
-                                    Log.d(TAG, "ReqTopic["+ MQTT_Req_Topic+"]");
-                                    Log.d(TAG, "ResTopic["+ MQTT_Resp_Topic+"]");
-                                    }
-                                });
+                                    handler.post(new Runnable() {
+                                        public void run() {
+                                            Log.d(TAG, "** AE Retrive ResponseCode[" + resmsg + "]");
+                                            MQTT_Req_Topic = "/oneM2M/req/Mobius2/" + ae.getAEid() + "_sub" + "/#";
+                                            MQTT_Resp_Topic = "/oneM2M/resp/Mobius2/" + ae.getAEid() + "_sub" + "/json";
+                                            Log.d(TAG, "ReqTopic[" + MQTT_Req_Topic + "]");
+                                            Log.d(TAG, "ResTopic[" + MQTT_Resp_Topic + "]");
+                                        }
+                                    });
                                 }
                             });
                             aeRetrive.start();
@@ -171,11 +206,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             SubscribeResource subcribeResource = new SubscribeResource("pir");
             subcribeResource.setReceiver(new IReceived() {
                 public void getResponseBody(final String msg) {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            textViewData.setText("**** Subscription Resource Creation Response ****\r\n\r\n" + msg);
-                        }
-                    });
                 }
             });
             subcribeResource.start();
@@ -184,11 +214,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             subcribeResource = new SubscribeResource("sound");
             subcribeResource.setReceiver(new IReceived() {
                 public void getResponseBody(final String msg) {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            textViewData.setText("**** Subscription Resource Creation Response ****\r\n\r\n" + msg);
-                        }
-                    });
                 }
             });
             subcribeResource.start();
@@ -251,33 +276,22 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
             Log.d(TAG, "messageArrived");
 
-            textViewData.setText("");
-            textViewData.setText("MQTT data received\r\n\r\n" + message.toString().replaceAll(",", "\n"));
-            Log.d(TAG, "Notify ResMessage:" + message.toString());
-
-            // Added by J. Yun, SCH Univ.
-//            JSONObject obj = new JSONObject(message.toString());
-//            String con = getContainerContentJSON(message.toString());
-//            Log.d(TAG, "Received content is " + con);
-//            textViewData.setText(con);
-
-            // Added by J. Yun, SCH Univ.
             String cnt = getContainerName(message.toString());
             Log.d(TAG, "Received container name is " + cnt);
             //textViewData.setText(cnt);
-            if (cnt.indexOf("pir") != -1)
+            if (cnt.indexOf("pir") != -1) {
+                Toast.makeText(getApplicationContext(), "사람이 감지되었습니다!", Toast.LENGTH_LONG).show();
                 textPIR.setText(getContainerContentJSON(message.toString()));
-            else if (cnt.indexOf("sound") != -1)
+            }else if (cnt.indexOf("sound") != -1) {
                 textSound.setText(getContainerContentJSON(message.toString()));
-            else
-                ;
+            }else{}
 
             /* Json Type Response Parsing */
             String retrqi = MqttClientRequestParser.notificationJsonParse(message.toString());
-            Log.d(TAG, "RQI["+ retrqi +"]");
+            Log.d(TAG, "RQI[" + retrqi + "]");
 
             String responseMessage = MqttClientRequest.notificationResponse(retrqi);
-            Log.d(TAG, "Recv OK ResMessage ["+responseMessage+"]");
+            Log.d(TAG, "Recv OK ResMessage [" + responseMessage + "]");
 
             /* Make json for MQTT Response Message */
             MqttMessage res_message = new MqttMessage(responseMessage.getBytes());
@@ -288,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 e.printStackTrace();
             }
         }
+
         @Override
         public void deliveryComplete(IMqttDeliveryToken token) {
             Log.d(TAG, "deliveryComplete");
@@ -344,80 +359,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnRetrieve: {
-                RetrieveRequest req = new RetrieveRequest("light");
-                req.setReceiver(new IReceived() {
-                    public void getResponseBody(final String msg) {
-                    handler.post(new Runnable() {
-                        public void run() {
-                            textLight.setText(getContainerContentXML(msg));
-                        }
-                    });
-                    }
-                });
-                req.start();
-
-                req = new RetrieveRequest("accel");
-                req.setReceiver(new IReceived() {
-                    public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                                textAccel.setText(getContainerContentXML(msg));
-                            }
-                        });
-                    }
-                });
-                req.start();
-
-                req = new RetrieveRequest("dust");
-                req.setReceiver(new IReceived() {
-                    public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                                textDust.setText(getContainerContentXML(msg));
-                            }
-                        });
-                    }
-                });
-                req.start();
-
-                req = new RetrieveRequest("ultrasonic");
-                req.setReceiver(new IReceived() {
-                    public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                                textUltrasonic.setText(getContainerContentXML(msg));
-                            }
-                        });
-                    }
-                });
-                req.start();
-
-                req = new RetrieveRequest("temp");
-                req.setReceiver(new IReceived() {
-                    public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                                textTemp.setText(getContainerContentXML(msg));
-                            }
-                        });
-                    }
-                });
-                req.start();
-
-                break;
-            }
             case R.id.btnControl_Red: {
                 if (((ToggleButton) v).isChecked()) {
                     ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextRed));
                     ControlRequest req = new ControlRequest("1");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                            handler.post(new Runnable() {
-                                public void run() {
-                                textViewData.setText("************** LED Red On *************\r\n\r\n" + msg);
-                                }
-                            });
                         }
                     });
                     req.start();
@@ -426,11 +373,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     ControlRequest req = new ControlRequest("2");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                            handler.post(new Runnable() {
-                                public void run() {
-                                textViewData.setText("************** LED Red Off *************\r\n\r\n" + msg);
-                                }
-                            });
                         }
                     });
                     req.start();
@@ -443,11 +385,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     ControlRequest req = new ControlRequest("3");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                            handler.post(new Runnable() {
-                                public void run() {
-                                textViewData.setText("************** LED Green On *************\r\n\r\n" + msg);
-                                }
-                            });
                         }
                     });
                     req.start();
@@ -456,11 +393,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     ControlRequest req = new ControlRequest("4");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                            handler.post(new Runnable() {
-                                public void run() {
-                                textViewData.setText("************** LED Green Off *************\r\n\r\n" + msg);
-                                }
-                            });
                         }
                     });
                     req.start();
@@ -473,11 +405,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     ControlRequest req = new ControlRequest("5");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                            textViewData.setText("************** LED Blue On *************\r\n\r\n" + msg);
-                            }
-                        });
                         }
                     });
                     req.start();
@@ -486,11 +413,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     ControlRequest req = new ControlRequest("6");
                     req.setReceiver(new IReceived() {
                         public void getResponseBody(final String msg) {
-                        handler.post(new Runnable() {
-                            public void run() {
-                            textViewData.setText("************** LED Blue Off *************\r\n\r\n" + msg);
-                            }
-                        });
                         }
                     });
                     req.start();
@@ -500,11 +422,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         }
     }
+
     @Override
     public void onStart() {
         super.onStart();
 
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -527,8 +451,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         public RetrieveRequest(String containerName) {
             this.ContainerName = containerName;
         }
-        public RetrieveRequest() {}
-        public void setReceiver(IReceived hanlder) { this.receiver = hanlder; }
+
+        public RetrieveRequest() {
+        }
+
+        public void setReceiver(IReceived hanlder) {
+            this.receiver = hanlder;
+        }
 
         @Override
         public void run() {
@@ -544,19 +473,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
                 conn.setRequestProperty("Accept", "application/xml");
                 conn.setRequestProperty("X-M2M-RI", "12345");
-                conn.setRequestProperty("X-M2M-Origin", ae.getAEid() );
+                conn.setRequestProperty("X-M2M-Origin", ae.getAEid());
                 conn.setRequestProperty("nmtype", "long");
                 conn.connect();
 
                 String strResp = "";
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                String strLine= "";
+                String strLine = "";
                 while ((strLine = in.readLine()) != null) {
                     strResp += strLine;
                 }
 
-                if ( strResp != "" ) {
+                if (strResp != "") {
                     receiver.getResponseBody(strResp);
                 }
                 conn.disconnect();
@@ -566,6 +495,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         }
     }
+
     /* Request Control LED */
     class ControlRequest extends Thread {
         private final Logger LOG = Logger.getLogger(ControlRequest.class.getName());
@@ -575,16 +505,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 
         public ContentInstanceObject contentinstance;
+
         public ControlRequest(String comm) {
             contentinstance = new ContentInstanceObject();
             contentinstance.setContent(comm);
         }
-        public void setReceiver(IReceived hanlder) { this.receiver = hanlder; }
+
+        public void setReceiver(IReceived hanlder) {
+            this.receiver = hanlder;
+        }
 
         @Override
         public void run() {
             try {
-                String sb = csebase.getServiceUrl() +"/" + ServiceAEName + "/" + container_name;
+                String sb = csebase.getServiceUrl() + "/" + ServiceAEName + "/" + container_name;
 
                 URL mUrl = new URL(sb);
 
@@ -599,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 conn.setRequestProperty("Content-Type", "application/vnd.onem2m-res+xml;ty=4");
                 conn.setRequestProperty("locale", "ko");
                 conn.setRequestProperty("X-M2M-RI", "12345");
-                conn.setRequestProperty("X-M2M-Origin", ae.getAEid() );
+                conn.setRequestProperty("X-M2M-Origin", ae.getAEid());
 
                 String reqContent = contentinstance.makeXML();
                 conn.setRequestProperty("Content-Length", String.valueOf(reqContent.length()));
@@ -612,7 +546,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String resp = "";
-                String strLine="";
+                String strLine = "";
                 while ((strLine = in.readLine()) != null) {
                     resp += strLine;
                 }
@@ -626,19 +560,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         }
     }
+
     /* Request AE Creation */
     class aeCreateRequest extends Thread {
         private final Logger LOG = Logger.getLogger(aeCreateRequest.class.getName());
         String TAG = aeCreateRequest.class.getName();
         private IReceived receiver;
-        int responseCode=0;
+        int responseCode = 0;
         public ApplicationEntityObject applicationEntity;
-        public void setReceiver(IReceived hanlder) { this.receiver = hanlder; }
-        public aeCreateRequest(){
+
+        public void setReceiver(IReceived hanlder) {
+            this.receiver = hanlder;
+        }
+
+        public aeCreateRequest() {
             applicationEntity = new ApplicationEntityObject();
             applicationEntity.setResourceName(ae.getappName());
             Log.d(TAG, ae.getappName() + "JJjj");
         }
+
         @Override
         public void run() {
             try {
@@ -656,9 +596,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 conn.setRequestProperty("Content-Type", "application/vnd.onem2m-res+xml;ty=2");
                 conn.setRequestProperty("Accept", "application/xml");
                 conn.setRequestProperty("locale", "ko");
-                conn.setRequestProperty("X-M2M-Origin", "S"+ae.getappName());
+                conn.setRequestProperty("X-M2M-Origin", "S" + ae.getappName());
                 conn.setRequestProperty("X-M2M-RI", "12345");
-                conn.setRequestProperty("X-M2M-NM", ae.getappName() );
+                conn.setRequestProperty("X-M2M-NM", ae.getappName());
 
                 String reqXml = applicationEntity.makeXML();
                 conn.setRequestProperty("Content-Length", String.valueOf(reqXml.length()));
@@ -684,12 +624,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
                     ParseElementXml pxml = new ParseElementXml();
                     aei = pxml.GetElementXml(resp, "aei");
-                    ae.setAEid( aei );
+                    ae.setAEid(aei);
                     Log.d(TAG, "Create Get AEID[" + aei + "]");
                     in.close();
                 }
                 if (responseCode != 0) {
-                    receiver.getResponseBody( Integer.toString(responseCode) );
+                    receiver.getResponseBody(Integer.toString(responseCode));
                 }
                 conn.disconnect();
             } catch (Exception exp) {
@@ -698,14 +638,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         }
     }
+
     /* Retrieve AE-ID */
     class aeRetrieveRequest extends Thread {
         private final Logger LOG = Logger.getLogger(aeCreateRequest.class.getName());
         private IReceived receiver;
-        int responseCode=0;
+        int responseCode = 0;
 
         public aeRetrieveRequest() {
         }
+
         public void setReceiver(IReceived hanlder) {
             this.receiver = hanlder;
         }
@@ -713,7 +655,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         @Override
         public void run() {
             try {
-                String sb = csebase.getServiceUrl()+"/"+ ae.getappName();
+                String sb = csebase.getServiceUrl() + "/" + ae.getappName();
                 URL mUrl = new URL(sb);
 
                 HttpURLConnection conn = (HttpURLConnection) mUrl.openConnection();
@@ -743,12 +685,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
                     ParseElementXml pxml = new ParseElementXml();
                     aei = pxml.GetElementXml(resp, "aei");
-                    ae.setAEid( aei );
+                    ae.setAEid(aei);
                     //Log.d(TAG, "Retrieve Get AEID[" + aei + "]");
                     in.close();
                 }
                 if (responseCode != 0) {
-                    receiver.getResponseBody( Integer.toString(responseCode) );
+                    receiver.getResponseBody(Integer.toString(responseCode));
                 }
                 conn.disconnect();
             } catch (Exception exp) {
@@ -756,6 +698,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         }
     }
+
     /* Subscribe Co2 Content Resource */
     class SubscribeResource extends Thread {
         private final Logger LOG = Logger.getLogger(SubscribeResource.class.getName());
@@ -764,18 +707,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         private String container_name; //change to control container name
 
         public ContentSubscribeObject subscribeInstance;
+
         public SubscribeResource(String containerName) {
             subscribeInstance = new ContentSubscribeObject();
             subscribeInstance.setUrl(csebase.getHost());
-            subscribeInstance.setResourceName(ae.getAEid()+"_rn");
-            subscribeInstance.setPath(ae.getAEid()+"_sub");
+            subscribeInstance.setResourceName(ae.getAEid() + "_rn");
+            subscribeInstance.setPath(ae.getAEid() + "_sub");
             subscribeInstance.setOrigin_id(ae.getAEid());
 
             // added by J. Yun, SCH Univ.
             this.container_name = containerName;
         }
 
-        public void setReceiver(IReceived hanlder) { this.receiver = hanlder; }
+        public void setReceiver(IReceived hanlder) {
+            this.receiver = hanlder;
+        }
 
         @Override
         public void run() {
@@ -808,7 +754,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String resp = "";
-                String strLine="";
+                String strLine = "";
                 while ((strLine = in.readLine()) != null) {
                     resp += strLine;
                 }

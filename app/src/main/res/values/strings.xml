@@ -3,7 +3,7 @@
     <string name="textview_about">oneM2MApp application</string>
     <string name="btn_retrieve">Retrieve Data</string>
     <string name="title">oneM2M application for Android</string>
-    <string name="btn_switch">MQTT ON</string>
+    <string name="btn_switch">방범 모드</string>
     <string name="btn_red_off">Red Off</string>
     <string name="btn_red_on">Red On</string>
     <string name="btn_green_off">Green Off</string>
