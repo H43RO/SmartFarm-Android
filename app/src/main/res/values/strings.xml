@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">oneM2MApp, SCH Univ.</string>
+    <string name="textview_about">oneM2MApp application</string>
+    <string name="btn_retrieve">Retrieve Data</string>
+    <string name="title">oneM2M application for Android</string>
+    <string name="btn_switch">MQTT ON</string>
+    <string name="btn_red_off">Red Off</string>
+    <string name="btn_red_on">Red On</string>
+    <string name="btn_green_off">Green Off</string>
+    <string name="btn_green_on">Green On</string>
+    <string name="btn_blue_off">Blue Off</string>
+    <string name="btn_blue_on">Blue On</string>
+    <string name="mobius_address">203.253.128.161</string>
+    <string name="addr_unset">Connect</string>
+    <string name="addr_set">Disconnect</string>
+
+    <!-- added by J. Yun, SCH Univ -->
+    <string name="textview_light_label">Light</string>
+    <string name="textview_light_value">0</string>
+    <string name="textview_accel_label">Acceleration</string>
+    <string name="textview_accel_value">0</string>
+    <string name="textview_dust_label">Dust</string>
+    <string name="textview_dust_value">0</string>
+    <string name="textview_ultrasonic_label">Ultrasonic</string>
+    <string name="textview_ultrasonic_value">0</string>
+    <string name="textview_temperature_label">Temperature</string>
+    <string name="textview_temperature_value">0</string>
+    <string name="textview_pir_label">PIR</string>
+    <string name="textview_pir_value">No motion</string>
+    <string name="textview_sound_label">Sound</string>
+    <string name="textview_sound_value">No sound</string>
+</resources>
