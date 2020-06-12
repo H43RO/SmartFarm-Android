@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F3F3"
+    android:background="#FFF8F8F8"
     android:orientation="vertical">
 
 
     <LinearLayout
-        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#F3F3F3"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:background="#FFF8F8F8"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="30dp"
             android:text="스마트 팜"
             android:textColor="#292929"
             android:textSize="40dp"
@@ -28,28 +29,49 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
             android:text="당신을 위한 스마트 농장 관리 앱"
             android:textColor="#454545"
             android:textSize="20dp" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <LinearLayout
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="70dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="4dp"
+        android:elevation="2dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/security_status"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:text="방범모드가 비활성화 되었습니다"
+                android:textStyle="normal" />
 
-    </LinearLayout>
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switch_mqtt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="16dp" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
 
 
     <LinearLayout
@@ -61,29 +83,30 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:elevation="2dp" >
+            android:elevation="2dp">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="65dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/temperature"/>
+                    android:src="@drawable/temperature" />
 
                 <TextView
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
+                    android:textStyle="bold"
                     android:id="@+id/textTemp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="로드 중"
                     android:textSize="20sp" />
 
@@ -95,29 +118,30 @@
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:elevation="2dp" >
+            android:elevation="2dp">
 
             <LinearLayout
-                android:gravity="center"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/drop"/>
+                    android:src="@drawable/drop" />
 
                 <TextView
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
+                    android:textStyle="bold"
                     android:id="@+id/textHumid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="로드 중"
                     android:textSize="20sp" />
 
@@ -128,30 +152,31 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_marginTop="4dp"
             android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
             android:layout_marginRight="8dp"
             android:layout_marginBottom="4dp"
             android:layout_weight="1"
-            android:elevation="2dp" >
+            android:elevation="2dp">
 
             <LinearLayout
-                android:gravity="center"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="60dp"
                     android:layout_height="70dp"
-                    android:src="@drawable/dust"/>
+                    android:src="@drawable/dust" />
 
                 <TextView
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
+                    android:textStyle="bold"
                     android:id="@+id/textDust"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
                     android:text="로드 중"
                     android:textSize="20sp" />
 
@@ -162,18 +187,127 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/monitor_card"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:elevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/nature" />
+
+                <TextView
+                    android:id="@+id/mon_title_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:text="작물 생장 관리"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cctv_card"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight="1"
+            android:elevation="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/cctv" />
+
+                <TextView
+                    android:id="@+id/cctv_title_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="CCTV 확인"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="70dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="4dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
-        android:elevation="2dp" />
+        android:elevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/alert"
+                android:layout_width="25dp"
+                android:layout_height="25dp"/>
+
+            <TextView
+                android:textSize="18dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:text="최근에 야생동물이 접근했습니다!"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 
     <LinearLayout
+        android:layout_marginTop="300dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -215,22 +349,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_marginTop="4dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_mqtt"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="@string/btn_switch"
-            android:textColor="#000000" />
-    </LinearLayout>
 
 
 </LinearLayout>

@@ -1,8 +1,14 @@
 package sch.iot.onem2mapp;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
@@ -40,11 +46,17 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 import static sch.iot.onem2mapp.R.layout.activity_main;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, CompoundButton.OnCheckedChangeListener {
+
+    //감시모드 여부 SharedPreference에 저장
+    SharedPreferences.Editor preEditor;
+    SharedPreferences pref;
+
     public Button btnRetrieve;
     public ToggleButton btnControl_Red;
     public ToggleButton btnControl_Green;
     public ToggleButton btnControl_Blue;
     public SwitchCompat Switch_MQTT;
+    public CardView toCctv;
 
     // added by J. Yun, SCH Univ.
     public TextView textDust;
@@ -52,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public TextView textSound;
     public TextView textTemp;
     public TextView textHumid;
+    public TextView security_status;
 
     public Handler handler;
 
@@ -74,8 +87,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         handler = new Handler();
     }
 
+
     /* onCreate */
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
 
@@ -83,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btnControl_Red = findViewById(R.id.btnControl_Red);
         btnControl_Green = findViewById(R.id.btnControl_Green);
         btnControl_Blue = findViewById(R.id.btnControl_Blue);
+        security_status = findViewById(R.id.security_status);
+        toCctv = findViewById(R.id.cctv_card);
 
         // added by J. Yun, SCH Univ.
         textDust = findViewById(R.id.textDust);
@@ -93,6 +110,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btnControl_Red.setOnClickListener(this);
         btnControl_Green.setOnClickListener(this);
         btnControl_Blue.setOnClickListener(this);
+        toCctv.setOnClickListener(this);
+
+        preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
+        pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        if(pref.getString("checked", "no").equals("yes")){
+            Switch_MQTT.setChecked(true);
+        }else{
+            Switch_MQTT.setChecked(false);
+        }
 
         // Create AE and Get AEID
         GetAEInfo();
@@ -111,13 +138,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                 String[] dust = (dust_text.split(","));
                                 int result = Integer.parseInt(dust[1]); //초미세먼지 (PM2.5)
 
-                                if(0 < result && result <= 15){
+                                if (0 < result && result <= 15) {
                                     textDust.setText("좋음");
-                                }else if(15 < result && result <= 35){
+                                } else if (15 < result && result <= 35) {
                                     textDust.setText("보통");
-                                }else if(36 < result && result <= 75){
+                                } else if (36 < result && result <= 75) {
                                     textDust.setText("나쁨");
-                                }else if(75 < result){
+                                } else if (75 < result) {
                                     textDust.setText("심각");
                                 }
                             }
@@ -134,15 +161,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                 String temp_humid_text = getContainerContentXML(msg);
                                 String[] temp_humid = (temp_humid_text.split(","));
                                 double[] temp = new double[2];
-                                int [] result = new int[2];
+                                int[] result = new int[2];
 
-                                for(int i = 0; i < 2; i++){
+                                for (int i = 0; i < 2; i++) {
                                     temp[i] = Double.parseDouble(temp_humid[i]);
-                                    result[i] = (int)temp[i];
+                                    result[i] = (int) temp[i];
                                 }
 
-                                textTemp.setText(result[0]+ "°C");
-                                textHumid.setText(result[1]+ "%");
+                                textTemp.setText(result[0] + "°C");
+                                textHumid.setText(result[1] + "%");
 
                             }
                         });
@@ -155,15 +182,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         timer.schedule(TT, 0, 3000); //Timer 실행
 
-//
-//        login.setOnClickListener(new Button.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                intent.putExtra("rpi_address", address.getText().toString());
-//                startActivity(intent);
-//            }
-//        });
     }
 
     /* AE Create for Androdi AE */
@@ -210,15 +228,37 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         aeCreate.start();
     }
 
-    // Switch - Get PIR and Sound Data With MQTT, by J. Yun, SCH Univ.
+
+
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+        Intent foreground = new Intent(getApplicationContext(), ForegroundService.class);
+
         if (isChecked) {
+            security_status.setText("방범모드가 활성화 되었습니다");
+            security_status.setTypeface(null, Typeface.BOLD);
             Log.d(TAG, "MQTT Create");
             MQTT_Create(true);
+
+            if (Build.VERSION.SDK_INT >= 26) {
+                getApplicationContext().startForegroundService(foreground);
+            }
+            else {
+                getApplicationContext().startService(foreground);
+            }
+
+            preEditor.putString("checked","yes");
+            preEditor.apply();
+
         } else {
+            stopService(foreground);
+            security_status.setText("방범모드가 비활성화 되었습니다");
+            security_status.setTypeface(null, Typeface.NORMAL);
             Log.d(TAG, "MQTT Close");
             MQTT_Create(false);
+
+            preEditor.putString("checked","false");
+            preEditor.apply();
         }
     }
 
@@ -298,17 +338,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
 
+            Intent foreground = new Intent(getApplicationContext(), ForegroundService.class);
             Log.d(TAG, "messageArrived");
 
             String cnt = getContainerName(message.toString());
             Log.d(TAG, "Received container name is " + cnt);
             //textViewData.setText(cnt);
             if (cnt.indexOf("pir") != -1) {
-                Toast.makeText(getApplicationContext(), "사람이 감지되었습니다!", Toast.LENGTH_LONG).show();
-                textPIR.setText(getContainerContentJSON(message.toString()));
-            }else if (cnt.indexOf("sound") != -1) {
-                textSound.setText(getContainerContentJSON(message.toString()));
-            }else{}
+                //PIR 감지 시 foreground service 종료
+                stopService(foreground);
+                Toast.makeText(getApplicationContext(), "침입이 감지되었습니다!", Toast.LENGTH_LONG).show();
+                Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
+                startActivity(toCctv);
+            } else if (cnt.indexOf("sound") != -1) {
+            } else {
+            }
 
             /* Json Type Response Parsing */
             String retrqi = MqttClientRequestParser.notificationJsonParse(message.toString());
@@ -442,6 +486,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     req.start();
                 }
                 break;
+            }
+            case R.id.cctv_card: {
+                Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
+                startActivity(toCctv);
             }
 
         }

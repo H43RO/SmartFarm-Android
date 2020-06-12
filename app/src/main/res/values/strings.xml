@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">oneM2MApp, SCH Univ.</string>
+    <string name="app_name">SmartFarm</string>
     <string name="textview_about">oneM2MApp application</string>
     <string name="btn_retrieve">Retrieve Data</string>
     <string name="title">oneM2M application for Android</string>

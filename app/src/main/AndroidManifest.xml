@@ -22,8 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".CctvActivity">
-
         </activity>
+        <service android:name=".ForegroundService" />
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
 

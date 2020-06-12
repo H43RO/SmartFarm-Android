@@ -16,7 +16,6 @@ public class CctvActivity extends AppCompatActivity {
         WebView webView;
         WebSettings webSettings;
 
-
         webView = (WebView)findViewById(R.id.cctv);
         webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
