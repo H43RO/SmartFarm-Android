@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public TextView textPIR;
     public TextView textSound;
     public TextView textTemp;
+    public TextView textHumid;
 
     public Handler handler;
 
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         textDust = findViewById(R.id.textDust);
         textPIR = findViewById(R.id.textPIR);
         textTemp = findViewById(R.id.textTemp);
+        textHumid = findViewById(R.id.textHumid);
 
         Switch_MQTT.setOnCheckedChangeListener(this);
         btnControl_Red.setOnClickListener(this);
@@ -95,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         // Create AE and Get AEID
         GetAEInfo();
-
         Timer timer = new Timer();
 
         TimerTask TT = new TimerTask() {
@@ -107,7 +108,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     public void getResponseBody(final String msg) {
                         handler.post(new Runnable() {
                             public void run() {
-                                textDust.setText(getContainerContentXML(msg));
+                                String dust_text = getContainerContentXML(msg);
+                                String[] dust = (dust_text.split(","));
+                                int result = Integer.parseInt(dust[1]); //초미세먼지 (PM2.5)
+
+                                if(0 < result && result <= 15){
+                                    textDust.setText("좋음");
+                                }else if(15 < result && result <= 35){
+                                    textDust.setText("보통");
+                                }else if(36 < result && result <= 75){
+                                    textDust.setText("나쁨");
+                                }else if(75 < result){
+                                    textDust.setText("심각");
+                                }
                             }
                         });
                     }
@@ -119,7 +132,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     public void getResponseBody(final String msg) {
                         handler.post(new Runnable() {
                             public void run() {
-                                textTemp.setText(getContainerContentXML(msg));
+                                String temp_humid_text = getContainerContentXML(msg);
+                                String[] temp_humid = (temp_humid_text.split(","));
+                                double[] temp = new double[2];
+                                int [] result = new int[2];
+
+                                for(int i = 0; i < 2; i++){
+                                    temp[i] = Double.parseDouble(temp_humid[i]);
+                                    result[i] = (int)temp[i];
+                                }
+
+                                textTemp.setText(result[0]+ "°C");
+                                textHumid.setText(result[1]+ "%");
+
                             }
                         });
                     }
