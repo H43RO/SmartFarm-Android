@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         // added by J. Yun, SCH Univ.
         textDust = findViewById(R.id.textDust);
-        textPIR = findViewById(R.id.textPIR);
         textTemp = findViewById(R.id.textTemp);
         textHumid = findViewById(R.id.textHumid);
 
