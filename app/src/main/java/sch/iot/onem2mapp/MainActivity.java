@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -53,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     SharedPreferences pref;
 
     public Button btnRetrieve;
-    public ToggleButton btnControl_Red;
-    public ToggleButton btnControl_Green;
-    public ToggleButton btnControl_Blue;
     public SwitchCompat Switch_MQTT;
     public CardView toCctv;
     public ImageView toSetting;
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String MQTTPort = "1883";
 
     // Modify this variable associated with your AE name in Mobius, by J. Yun, SCH Univ.
-    private String ServiceAEName = "sch20181512";
+    private static String ServiceAEName = "sch20181512";
     private String MQTT_Req_Topic = "";
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
@@ -109,9 +105,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         Log.d("test_ae_create", ServiceAEName);
 
         Switch_MQTT = findViewById(R.id.switch_mqtt);
-        btnControl_Red = findViewById(R.id.btnControl_Red);
-        btnControl_Green = findViewById(R.id.btnControl_Green);
-        btnControl_Blue = findViewById(R.id.btnControl_Blue);
         security_status = findViewById(R.id.security_status);
         toCctv = findViewById(R.id.cctv_card);
         toSetting = findViewById(R.id.to_setting);
@@ -121,9 +114,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         textHumid = findViewById(R.id.textHumid);
 
         Switch_MQTT.setOnCheckedChangeListener(this);
-        btnControl_Red.setOnClickListener(this);
-        btnControl_Green.setOnClickListener(this);
-        btnControl_Blue.setOnClickListener(this);
         toCctv.setOnClickListener(this);
         toSetting.setOnClickListener(this);
 
@@ -438,66 +428,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnControl_Red: {
-                if (((ToggleButton) v).isChecked()) {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextRed));
-                    ControlRequest req = new ControlRequest("1");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                } else {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextOff));
-                    ControlRequest req = new ControlRequest("2");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                }
-                break;
-            }
-            case R.id.btnControl_Green: {
-                if (((ToggleButton) v).isChecked()) {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextGreen));
-                    ControlRequest req = new ControlRequest("3");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                } else {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextOff));
-                    ControlRequest req = new ControlRequest("4");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                }
-                break;
-            }
-            case R.id.btnControl_Blue: {
-                if (((ToggleButton) v).isChecked()) {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextBlue));
-                    ControlRequest req = new ControlRequest("5");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                } else {
-                    ((ToggleButton) v).setTextColor(getResources().getColor(R.color.colorTextOff));
-                    ControlRequest req = new ControlRequest("6");
-                    req.setReceiver(new IReceived() {
-                        public void getResponseBody(final String msg) {
-                        }
-                    });
-                    req.start();
-                }
-                break;
-            }
             case R.id.cctv_card: {
                 Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
                 startActivity(toCctv);
@@ -587,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     /* Request Control LED */
-    class ControlRequest extends Thread {
+    public static class ControlRequest extends Thread {
         private final Logger LOG = Logger.getLogger(ControlRequest.class.getName());
         private IReceived receiver;
         //        private String container_name = "cnt-led";

@@ -1,11 +1,81 @@
 package sch.iot.onem2mapp;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.ToggleButton;
 
-public class CctvActivity extends AppCompatActivity {
+public class CctvActivity extends AppCompatActivity implements Button.OnClickListener {
     public String src;
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.ledOnButton:
+                if(((ToggleButton) v).isChecked()){
+                    MainActivity.ControlRequest redOn = new MainActivity.ControlRequest("1");
+                    redOn.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    redOn.start();
+
+                    MainActivity.ControlRequest greenOn = new MainActivity.ControlRequest("3");
+                    greenOn.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    greenOn.start();
+
+                    MainActivity.ControlRequest blueOn = new MainActivity.ControlRequest("5");
+                    blueOn.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    blueOn.start();
+                }else{
+                    MainActivity.ControlRequest redOff = new MainActivity.ControlRequest("2");
+                    redOff.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    redOff.start();
+
+                    MainActivity.ControlRequest greenOff = new MainActivity.ControlRequest("4");
+                    greenOff.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    greenOff.start();
+
+                    MainActivity.ControlRequest blueOff = new MainActivity.ControlRequest("6");
+                    blueOff.setReceiver(new MainActivity.IReceived() {
+                        @Override
+                        public void getResponseBody(String msg) {
+
+                        }
+                    });
+                    blueOff.start();
+                }
+                break;
+        }
+    }
+
+    public ToggleButton led_toggle;
 
     @Override
     protected void onResume() {
@@ -17,6 +87,9 @@ public class CctvActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cctv);
+
+        led_toggle = findViewById(R.id.ledOnButton);
+        led_toggle.setOnClickListener(this);
 
         WebView webView;
         WebSettings webSettings;
@@ -31,5 +104,6 @@ public class CctvActivity extends AppCompatActivity {
                         "img{width:100%25;} div{overflow: hidden;} </style></head>" +
                         "<body><div><img src='"+ src +"'/></div></body></html>" ,
                 "text/html",  "UTF-8");
+
     }
 }

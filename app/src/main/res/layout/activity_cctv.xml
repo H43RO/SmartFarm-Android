@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/cctv"/>
 
-
+    <ToggleButton
+        android:id="@+id/ledOnButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
 </LinearLayout>

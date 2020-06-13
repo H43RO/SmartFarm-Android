@@ -310,47 +310,4 @@
 
     </android.support.v7.widget.CardView>
 
-    <LinearLayout
-        android:layout_marginTop="300dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:id="@+id/btnControl_Red"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:textColor="#888888"
-            android:textOff="@string/btn_red_off"
-            android:textOn="@string/btn_red_on"
-            android:textStyle="bold" />
-
-        <ToggleButton
-            android:id="@+id/btnControl_Green"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:textColor="#888888"
-            android:textOff="@string/btn_green_off"
-            android:textOn="@string/btn_green_on"
-            android:textStyle="bold" />
-
-        <ToggleButton
-            android:id="@+id/btnControl_Blue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:textColor="#888888"
-            android:textOff="@string/btn_blue_off"
-            android:textOn="@string/btn_blue_on"
-            android:textStyle="bold" />
-    </LinearLayout>
-
 </LinearLayout>
