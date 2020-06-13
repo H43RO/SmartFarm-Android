@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public ToggleButton btnControl_Blue;
     public SwitchCompat Switch_MQTT;
     public CardView toCctv;
+    public ImageView toSetting;
 
     // added by J. Yun, SCH Univ.
     public TextView textDust;
@@ -68,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public Handler handler;
 
+
+    static Communication info = new Communication();
+
     private static CSEBase csebase = new CSEBase();
     private static AE ae = new AE();
     private static String TAG = "MainActivity";
@@ -75,18 +80,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     // Modify this variable associated with your AE name in Mobius, by J. Yun, SCH Univ.
     private String ServiceAEName = "sch20181512";
-
     private String MQTT_Req_Topic = "";
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
     private EditText EditText_Address = null;
     private String Mobius_Address = "";
 
+
     // Main
     public MainActivity() {
         handler = new Handler();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ServiceAEName = info.ae_name;
+        Log.d("test_ae_create", ServiceAEName);
+    }
 
     /* onCreate */
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +105,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(activity_main);
 
+        ServiceAEName = info.ae_name;
+        Log.d("test_ae_create", ServiceAEName);
+
+
         Switch_MQTT = findViewById(R.id.switch_mqtt);
         btnControl_Red = findViewById(R.id.btnControl_Red);
         btnControl_Green = findViewById(R.id.btnControl_Green);
         btnControl_Blue = findViewById(R.id.btnControl_Blue);
         security_status = findViewById(R.id.security_status);
         toCctv = findViewById(R.id.cctv_card);
+        toSetting = findViewById(R.id.to_setting);
 
-        // added by J. Yun, SCH Univ.
         textDust = findViewById(R.id.textDust);
         textTemp = findViewById(R.id.textTemp);
         textHumid = findViewById(R.id.textHumid);
@@ -111,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btnControl_Green.setOnClickListener(this);
         btnControl_Blue.setOnClickListener(this);
         toCctv.setOnClickListener(this);
+        toSetting.setOnClickListener(this);
+
 
         preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -246,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             else {
                 getApplicationContext().startService(foreground);
             }
-
             preEditor.putString("checked","yes");
             preEditor.apply();
 
@@ -347,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             if (cnt.indexOf("pir") != -1) {
                 //PIR 감지 시 foreground service 종료
                 stopService(foreground);
+                Switch_MQTT.setChecked(false);
                 Toast.makeText(getApplicationContext(), "침입이 감지되었습니다!", Toast.LENGTH_LONG).show();
                 Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
                 startActivity(toCctv);
@@ -490,6 +507,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.cctv_card: {
                 Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
                 startActivity(toCctv);
+                break;
+            }
+
+            case R.id.to_setting: {
+                Intent toSetting = new Intent(getApplicationContext(), SettingActivity.class);
+                startActivity(toSetting);
+                break;
             }
 
         }
