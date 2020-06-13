@@ -50,7 +50,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
         FileOutputStream os = null;
         try{
             os = new FileOutputStream(file);
-            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 200, os);   //비트맵을 PNG파일로 변환
+            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);   //비트맵을 PNG파일로 변환
             os.close();
         }catch (IOException e){
             e.printStackTrace();

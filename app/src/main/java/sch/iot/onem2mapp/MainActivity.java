@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public Handler handler;
 
-
     static Communication info = new Communication();
 
     private static CSEBase csebase = new CSEBase();
