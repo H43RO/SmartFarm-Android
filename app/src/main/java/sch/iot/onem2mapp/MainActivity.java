@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ServiceAEName = info.ae_name;
         Log.d("test_ae_create", ServiceAEName);
 
-
         Switch_MQTT = findViewById(R.id.switch_mqtt);
         btnControl_Red = findViewById(R.id.btnControl_Red);
         btnControl_Green = findViewById(R.id.btnControl_Green);
@@ -127,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btnControl_Blue.setOnClickListener(this);
         toCctv.setOnClickListener(this);
         toSetting.setOnClickListener(this);
-
 
         preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -184,21 +182,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                     temp[i] = Double.parseDouble(temp_humid[i]);
                                     result[i] = (int) temp[i];
                                 }
-
                                 textTemp.setText(result[0] + "°C");
                                 textHumid.setText(result[1] + "%");
-
                             }
                         });
                     }
                 });
                 req.start();
             }
-
         };
 
         timer.schedule(TT, 0, 3000); //Timer 실행
-
     }
 
     /* AE Create for Androdi AE */
