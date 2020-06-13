@@ -6,17 +6,21 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class CctvActivity extends AppCompatActivity implements Button.OnClickListener {
     public String src;
-
+    public TextView led_on_off;
 
     @Override
     public void onClick(View v) {
+        led_on_off = findViewById(R.id.led_on_off_text);
+
         switch (v.getId()){
             case R.id.ledOnButton:
                 if(((ToggleButton) v).isChecked()){
+                    led_on_off.setText("LED ON");
                     MainActivity.ControlRequest redOn = new MainActivity.ControlRequest("1");
                     redOn.setReceiver(new MainActivity.IReceived() {
                         @Override
@@ -44,6 +48,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                     });
                     blueOn.start();
                 }else{
+                    led_on_off.setText("LED OFF");
                     MainActivity.ControlRequest redOff = new MainActivity.ControlRequest("2");
                     redOff.setReceiver(new MainActivity.IReceived() {
                         @Override
@@ -90,6 +95,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
 
         led_toggle = findViewById(R.id.ledOnButton);
         led_toggle.setOnClickListener(this);
+
 
         WebView webView;
         WebSettings webSettings;
