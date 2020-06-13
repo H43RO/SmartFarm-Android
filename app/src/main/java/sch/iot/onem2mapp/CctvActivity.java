@@ -1,7 +1,10 @@
 package sch.iot.onem2mapp;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -12,6 +15,9 @@ import android.widget.ToggleButton;
 public class CctvActivity extends AppCompatActivity implements Button.OnClickListener {
     public String src;
     public TextView led_on_off;
+    public CardView capture_card;
+    public CardView report_card;
+    public CardView setting_card;
 
     @Override
     public void onClick(View v) {
@@ -77,6 +83,20 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                     blueOff.start();
                 }
                 break;
+
+            case R.id.capture_card:
+
+                break;
+
+            case R.id.report_card:
+                Intent call = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:112"));
+                startActivity(call);
+                break;
+
+            case R.id.setting_card:
+                Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+                startActivity(intent);
+                break;
         }
     }
 
@@ -95,6 +115,15 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
 
         led_toggle = findViewById(R.id.ledOnButton);
         led_toggle.setOnClickListener(this);
+
+        capture_card =findViewById(R.id.capture_card);
+        capture_card.setOnClickListener(this);
+
+        report_card = findViewById(R.id.report_card);
+        report_card.setOnClickListener(this);
+
+        setting_card = findViewById(R.id.setting_card);
+        setting_card.setOnClickListener(this);
 
 
         WebView webView;
