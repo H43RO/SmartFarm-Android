@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
 
+
     // Main
     public MainActivity() {
         handler = new Handler();
@@ -348,8 +349,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 //PIR 감지 시 foreground service 종료
                 stopService(foreground);
                 Switch_MQTT.setChecked(false);
-//                Toast.makeText(getApplicationContext(), "침입이 감지되었습니다!", Toast.LENGTH_LONG).show();
-                Log.d("detected_test","감지");
+                Log.d("detected_test","침입 감지");
 
                 Intent intent = new Intent(getApplicationContext(), CctvActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     Notification notification = new Notification.Builder(getApplicationContext())
                             .setContentTitle("침입이 감지되었습니다!")
                             .setContentText("탭하여 CCTV 확인하기")
-                            .setSmallIcon(R.drawable.nature)
+                            .setSmallIcon(R.drawable.alert)
                             .setChannelId(CHANNEL_ID)
                             .setAutoCancel(true)
                             .setContentIntent(pendingIntent)
@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
                 } else {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "detected")
-                            .setSmallIcon(R.drawable.nature)
+                            .setSmallIcon(R.drawable.alert)
                             .setContentTitle("침입이 감지되었습니다!")
                             .setContentText("탭하여 CCTV 확인하기")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

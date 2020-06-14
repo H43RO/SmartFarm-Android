@@ -30,7 +30,7 @@ public class ForegroundService extends Service {
 
         // QQQ: notification 에 보여줄 타이틀, 내용을 수정한다.
         clsBuilder.setSmallIcon(R.drawable.nature)
-                .setContentTitle("감시모드가 활성화 되었습니다").setContentText("농장을 안전하게 지켜보는 중 입니다")
+                .setContentTitle("방범모드가 활성화 되었습니다").setContentText("농장을 안전하게 감시합니다")
                 .setContentIntent(pendingIntent);
 
         // foreground 서비스로 실행한다.
