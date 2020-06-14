@@ -1,55 +1,77 @@
 package sch.iot.onem2mapp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.SocketException;
 
 public class GrowMonitorActivity extends AppCompatActivity {
+    private ConnectFTP ConnectFTP = new ConnectFTP();
+    final String TAG = "Activity FTP";
+    String currentPath;
+    ImageView imageView;
+
+
+    String newFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
+    File file = new File(newFilePath);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grow_monitor);
 
-        Button down_button = findViewById(R.id.download);
-        down_button.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                getFtpImage();
-            }
-        });
+        imageView = findViewById(R.id.imageView);
+
+        DownloadFileTask down = new DownloadFileTask();
+        down.execute();
     }
 
-    private void getFtpImage(){
-        try{
-            FTPClient mFtp = new FTPClient();
-            mFtp.connect("192.168.0.246", 21);
-            mFtp.login("pi","rlaguswns5");
-            mFtp.setFileType(FTP.BINARY_FILE_TYPE);
-            mFtp.enterLocalPassiveMode();
 
-            String remote = "/image.jpg";
-            File downloadFile = new File("/sdcard/GrowUp/");
+    private class DownloadFileTask extends AsyncTask<String, Void, Void>{
 
-            FileOutputStream local = new FileOutputStream(downloadFile);
-            boolean aRtn = mFtp.retrieveFile(remote, local); //파일을 성공적으로 받으면 true
-            Log.d("FTP_Test", Boolean.toString(aRtn));
-            local.close();
-            mFtp.disconnect();
+        @Override
+        protected Void doInBackground(String... strings) {
+            boolean status = false;
+            String host = "192.168.0.246";
+            String username = "pi";
+            String password = "rlaguswns5";
+            status = ConnectFTP.ftpConnect(host, username, password, 21);
+            if(status == true){
+                Log.d(TAG, "Connection 성공");
+            }else{
+                Log.d(TAG, "Connection 실패");
+            }
+            currentPath = ConnectFTP.ftpGetDirectory();
 
-        }catch (SocketException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
+            file.mkdir();
+            newFilePath+= "/test.jpg";
+            try{
+                file = new File(newFilePath);
+                file.createNewFile();
+            }catch (Exception e){
+                Log.d(TAG, "실패");
+            }
+
+            Boolean fuck = ConnectFTP.ftpDownloadFile(currentPath + "/test/image.jpg", newFilePath);
+            Log.d("FTP", Boolean.toString(fuck));
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getApplicationContext(), "다운 성공",Toast.LENGTH_LONG).show();
+
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            imageView.setImageBitmap(bitmap);
         }
     }
 }
