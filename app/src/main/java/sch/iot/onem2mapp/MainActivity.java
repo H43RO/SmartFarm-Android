@@ -1,12 +1,20 @@
 package sch.iot.onem2mapp;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
@@ -14,10 +22,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -73,14 +79,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private static String TAG = "MainActivity";
     private String MQTTPort = "1883";
 
-    // Modify this variable associated with your AE name in Mobius, by J. Yun, SCH Univ.
     private static String ServiceAEName = "sch20181512";
     private String MQTT_Req_Topic = "";
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
-    private EditText EditText_Address = null;
-    private String Mobius_Address = "";
-
 
     // Main
     public MainActivity() {
@@ -119,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        if(pref.getString("checked", "no").equals("yes")){
+        if (pref.getString("checked", "no").equals("yes")) {
             Switch_MQTT.setChecked(true);
-        }else{
+        } else {
             Switch_MQTT.setChecked(false);
         }
 
@@ -229,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
 
-
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
         Intent foreground = new Intent(getApplicationContext(), ForegroundService.class);
@@ -242,11 +243,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
             if (Build.VERSION.SDK_INT >= 26) {
                 getApplicationContext().startForegroundService(foreground);
-            }
-            else {
+            } else {
                 getApplicationContext().startService(foreground);
             }
-            preEditor.putString("checked","yes");
+            preEditor.putString("checked", "yes");
             preEditor.apply();
 
         } else {
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             Log.d(TAG, "MQTT Close");
             MQTT_Create(false);
 
-            preEditor.putString("checked","false");
+            preEditor.putString("checked", "false");
             preEditor.apply();
         }
     }
@@ -327,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     };
 
+
     /* MQTT Broker Message Received */
     private MqttCallback mainMqttCallback = new MqttCallback() {
         @Override
@@ -347,9 +348,66 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 //PIR 감지 시 foreground service 종료
                 stopService(foreground);
                 Switch_MQTT.setChecked(false);
-                Toast.makeText(getApplicationContext(), "침입이 감지되었습니다!", Toast.LENGTH_LONG).show();
-                Intent toCctv = new Intent(getApplicationContext(), CctvActivity.class);
-                startActivity(toCctv);
+//                Toast.makeText(getApplicationContext(), "침입이 감지되었습니다!", Toast.LENGTH_LONG).show();
+                Log.d("detected_test","감지");
+
+                Intent intent = new Intent(getApplicationContext(), CctvActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+
+                if (Build.VERSION.SDK_INT >= 26) {
+
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    String id = "my_channel_01";
+                    CharSequence name = "농장에 침입이 감지되었습니다!";
+                    String description = "탭하여 CCTV 확인하기";
+
+                    int importance = NotificationManager.IMPORTANCE_HIGH;
+
+                    NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+
+                    mChannel.setDescription(description);
+                    mChannel.enableLights(true);
+
+                    mChannel.setLightColor(Color.RED);
+                    mChannel.enableVibration(true);
+                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+                    mNotificationManager.createNotificationChannel(mChannel);
+                    mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                    int notifyID = 1;
+                    String CHANNEL_ID = "my_channel_01";
+                    Notification notification = new Notification.Builder(getApplicationContext())
+                            .setContentTitle("침입이 감지되었습니다!")
+                            .setContentText("탭하여 CCTV 확인하기")
+                            .setSmallIcon(R.drawable.nature)
+                            .setChannelId(CHANNEL_ID)
+                            .setAutoCancel(true)
+                            .setContentIntent(pendingIntent)
+                            .build();
+
+                    mNotificationManager.notify(1, notification);
+
+                } else {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "detected")
+                            .setSmallIcon(R.drawable.nature)
+                            .setContentTitle("침입이 감지되었습니다!")
+                            .setContentText("탭하여 CCTV 확인하기")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent)
+                            .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                            .setAutoCancel(true);
+
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+
+                    // notificationId is a unique int for each notification that you must define
+                    notificationManager.notify(1004, builder.build());
+                }
+
+
             } else if (cnt.indexOf("sound") != -1) {
             } else {
             }
