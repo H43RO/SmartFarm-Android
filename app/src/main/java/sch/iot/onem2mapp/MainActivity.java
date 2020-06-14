@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public Button btnRetrieve;
     public SwitchCompat Switch_MQTT;
     public CardView toCctv;
+    public CardView toGrowUp;
     public ImageView toSetting;
 
     // added by J. Yun, SCH Univ.
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         security_status = findViewById(R.id.security_status);
         toCctv = findViewById(R.id.cctv_card);
         toSetting = findViewById(R.id.to_setting);
+        toGrowUp = findViewById(R.id.growup_card);
 
         textDust = findViewById(R.id.textDust);
         textTemp = findViewById(R.id.textTemp);
@@ -118,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         Switch_MQTT.setOnCheckedChangeListener(this);
         toCctv.setOnClickListener(this);
         toSetting.setOnClickListener(this);
+        toGrowUp.setOnClickListener(this);
 
         preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -494,6 +497,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.to_setting: {
                 Intent toSetting = new Intent(getApplicationContext(), SettingActivity.class);
                 startActivity(toSetting);
+                break;
+            }
+
+            case R.id.growup_card: {
+                Intent toGrowUp = new Intent(getApplicationContext(), GrowMonitorActivity.class);
+                startActivity(toGrowUp);
                 break;
             }
 
