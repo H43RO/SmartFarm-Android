@@ -46,11 +46,18 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
 
         String now = date.format(new Date()) + "_" + time.format(new Date());
         String filename = "farm_" + now + ".jpg";
-        File file = new File(Environment.getExternalStorageDirectory()+"/Pictures", filename);
+        File capture_folder = Environment.getExternalStoragePublicDirectory("/DCIM/SmartFarmCCTV/");
         FileOutputStream os = null;
+
+        if (!capture_folder.exists()) { //만약 경로에 폴더가 없다면
+            capture_folder.mkdir(); //폴더 생성
+        }
+
+        String image_path = Environment.getExternalStorageDirectory().getAbsolutePath()+"/DCIM/SmartFarmCCTV/";
+
         try{
-            os = new FileOutputStream(file);
-            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);   //비트맵을 PNG파일로 변환
+            os = new FileOutputStream(image_path+filename);
+            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);   //비트맵을 JPG파일로 변환
             os.close();
         }catch (IOException e){
             e.printStackTrace();
@@ -58,7 +65,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
         }
 
         view.setDrawingCacheEnabled(false);
-        return file;
+        return capture_folder;
     }
 
 

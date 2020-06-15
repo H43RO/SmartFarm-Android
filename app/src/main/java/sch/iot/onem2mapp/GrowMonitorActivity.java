@@ -11,15 +11,18 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
 
 public class GrowMonitorActivity extends AppCompatActivity {
     private ConnectFTP ConnectFTP = new ConnectFTP();
     final String TAG = "Activity FTP";
     String currentPath;
     ImageView imageView;
+    public List<Bitmap> image_list;
 
-    String newFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
+    String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     File file = new File(newFilePath);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +30,11 @@ public class GrowMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_grow_monitor);
 
         imageView = findViewById(R.id.imageView);
-
         DownloadFileTask down = new DownloadFileTask();
         down.execute();
     }
 
-    private class DownloadFileTask extends AsyncTask<String, Void, Void>{
+    private class DownloadFileTask extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -41,19 +43,22 @@ public class GrowMonitorActivity extends AppCompatActivity {
             String username = "pi";
             String password = "rlaguswns5";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
-            if(status == true){
+            if (status == true) {
                 Log.d(TAG, "Connection 성공");
-            }else{
+            } else {
                 Log.d(TAG, "Connection 실패");
             }
             currentPath = ConnectFTP.ftpGetDirectory();
 
-            file.mkdir();
-            newFilePath+= "/test.jpg";
-            try{
+
+            newFilePath += "/raspi5.jpg";
+            try {
+                if(!file.exists()){
+                    file.mkdir();
+                }
                 file = new File(newFilePath);
                 file.createNewFile();
-            }catch (Exception e){
+            } catch (Exception e) {
                 Log.d(TAG, "실패");
             }
 
@@ -66,11 +71,11 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(getApplicationContext(), "다운 성공",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "다운 성공", Toast.LENGTH_LONG).show();
 
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            Log.d("test_img",file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
-
         }
     }
 }
