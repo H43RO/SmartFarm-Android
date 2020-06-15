@@ -276,6 +276,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.CardView
+        android:id="@+id/wildlife_card"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginLeft="8dp"
@@ -291,19 +292,39 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="23dp"
-                android:layout_height="15dp"
-                android:layout_marginLeft="16dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
                 android:src="@drawable/alert" />
 
-            <TextView
-                android:textSize="18dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:gravity="center"
-                android:text="최근에 야생동물이 접근했습니다!"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/wildlife_status_text"
+                    android:textSize="14dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="center"
+                    android:text="최근에 야생동물이 접근하지 않았습니다"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/wildlife_come_time_text"
+                    android:layout_marginTop="4dp"
+                    android:textColor="#757575"
+                    android:textSize="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="13dp"
+                    android:gravity="center"
+                    android:text="자동 퇴치 시스템이 가동 중입니다."/>
+
+            </LinearLayout>
+
 
 
         </LinearLayout>

@@ -18,7 +18,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
     String currentPath;
     ImageView imageView;
 
-
     String newFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures";
     File file = new File(newFilePath);
 
@@ -32,7 +31,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
         DownloadFileTask down = new DownloadFileTask();
         down.execute();
     }
-
 
     private class DownloadFileTask extends AsyncTask<String, Void, Void>{
 
@@ -59,8 +57,8 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "실패");
             }
 
-            Boolean fuck = ConnectFTP.ftpDownloadFile(currentPath + "/test/image.jpg", newFilePath);
-            Log.d("FTP", Boolean.toString(fuck));
+            ConnectFTP.ftpDownloadFile(currentPath + "/2020-06-11-081018_1920x1080_scrot.png", newFilePath);
+            ConnectFTP.ftpDisconnect(); //CCTV Activity에서 RTSP 통신해줘야하기 때문에 FTP Close함
 
             return null;
         }
@@ -72,6 +70,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
+
         }
     }
 }

@@ -42,6 +42,8 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -61,15 +63,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public SwitchCompat Switch_MQTT;
     public CardView toCctv;
     public CardView toGrowUp;
+    public CardView wildlife_card;
     public ImageView toSetting;
 
-    // added by J. Yun, SCH Univ.
     public TextView textDust;
     public TextView textPIR;
     public TextView textSound;
     public TextView textTemp;
     public TextView textHumid;
     public TextView security_status;
+    public TextView wildlife_status;
+    public TextView wildlife_time;
 
     public Handler handler;
 
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String MQTT_Req_Topic = "";
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
+
+    private static String last_detected_time;
 
 
     // Main
@@ -112,10 +118,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         toCctv = findViewById(R.id.cctv_card);
         toSetting = findViewById(R.id.to_setting);
         toGrowUp = findViewById(R.id.growup_card);
+        wildlife_card = findViewById(R.id.wildlife_card);
 
         textDust = findViewById(R.id.textDust);
         textTemp = findViewById(R.id.textTemp);
         textHumid = findViewById(R.id.textHumid);
+
+        wildlife_status = findViewById(R.id.wildlife_status_text);
+        wildlife_time = findViewById(R.id.wildlife_come_time_text);
 
         Switch_MQTT.setOnCheckedChangeListener(this);
         toCctv.setOnClickListener(this);
@@ -133,9 +143,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         // Create AE and Get AEID
         GetAEInfo();
-        Timer timer = new Timer();
 
-        TimerTask TT = new TimerTask() {
+        Timer timer = new Timer();
+        final TimerTask TT = new TimerTask() {
             @Override
             public void run() {
                 RetrieveRequest req;
@@ -188,6 +198,45 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         };
 
         timer.schedule(TT, 0, 3000); //Timer 실행
+
+
+        Timer detected_timer = new Timer();
+        TimerTask detecting_task = new TimerTask() {
+            @Override
+            public void run() {
+
+                RetrieveRequest req;
+                req = new RetrieveRequest("ultrasonic");
+                req.setReceiver(new IReceived() {
+                    @Override
+                    public void getResponseBody(final String msg) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                String distance_msg = getContainerContentXML(msg);
+
+                                long current_detected_time = System.currentTimeMillis();
+                                Date date = new Date(current_detected_time);
+                                SimpleDateFormat now_format = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
+                                last_detected_time = now_format.format(date);
+
+
+
+                                //Toast.makeText(getApplicationContext(),"야생동물이 접근했습니다!",Toast.LENGTH_LONG).show();
+
+                                wildlife_status.setText("최근에 야생동물이 접근했습니다");
+                                wildlife_time.setText(last_detected_time);
+
+                            }
+                        });
+                    }
+                });
+                req.start();
+            }
+        };
+
+        detected_timer.schedule(detecting_task, 0, 500); //Timer 실행
+
     }
 
     /* AE Create for Androdi AE */
@@ -352,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 //PIR 감지 시 foreground service 종료
                 stopService(foreground);
                 Switch_MQTT.setChecked(false);
-                Log.d("detected_test","침입 감지");
+                Log.d("detected_test", "침입 감지");
 
                 Intent intent = new Intent(getApplicationContext(), CctvActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
