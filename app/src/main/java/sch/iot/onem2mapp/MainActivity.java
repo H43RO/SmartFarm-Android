@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -89,8 +90,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String MQTT_Resp_Topic = "";
     private MqttAndroidClient mqttClient = null;
 
-    private static String last_detected_time;
-
+    private static String current_detected_time = "";
+    private static String last_detected_time = "";
+    private static String last_msg = "";
 
     // Main
     public MainActivity() {
@@ -213,19 +215,29 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                String distance_msg = getContainerContentXML(msg);
+                                String detected_text = getContainerContentXML(msg);
+                                if(detected_text.equals(last_msg)){
+                                    //Skip
+                                }else{
+                                    last_msg = detected_text;
 
-                                long current_detected_time = System.currentTimeMillis();
-                                Date date = new Date(current_detected_time);
-                                SimpleDateFormat now_format = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
-                                last_detected_time = now_format.format(date);
+                                    long current_time = System.currentTimeMillis();
+                                    Date date = new Date(current_time);
+                                    SimpleDateFormat now_format = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
+                                    current_detected_time = now_format.format(date);
 
+                                    if (current_detected_time.equals(last_detected_time)) {
+                                        //Skip
+                                    } else {
+                                        last_detected_time = current_detected_time;
+                                        Toast.makeText(getApplicationContext(), "방금 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
 
+                                        wildlife_status.setText("최근 농장에 야생동물이 접근했습니다");
+                                        wildlife_time.setText(last_detected_time);
 
-                                //Toast.makeText(getApplicationContext(),"야생동물이 접근했습니다!",Toast.LENGTH_LONG).show();
+                                    }
 
-                                wildlife_status.setText("최근에 야생동물이 접근했습니다");
-                                wildlife_time.setText(last_detected_time);
+                                }
 
                             }
                         });
@@ -235,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         };
 
-        detected_timer.schedule(detecting_task, 0, 500); //Timer 실행
+        detected_timer.schedule(detecting_task, 0, 1000); //Timer 실행
 
     }
 
@@ -433,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     int notifyID = 1;
                     String CHANNEL_ID = "my_channel_01";
                     Notification notification = new Notification.Builder(getApplicationContext())
-                            .setContentTitle("침입이 감지되었습니다!")
+                            .setContentTitle("농장에 침입이 감지되었습니다!")
                             .setContentText("탭하여 CCTV 확인하기")
                             .setSmallIcon(R.drawable.alert)
                             .setChannelId(CHANNEL_ID)

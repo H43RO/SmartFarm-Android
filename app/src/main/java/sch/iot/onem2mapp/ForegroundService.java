@@ -28,15 +28,12 @@ public class ForegroundService extends Service {
             clsBuilder = new NotificationCompat.Builder(this);
         }
 
-        // QQQ: notification 에 보여줄 타이틀, 내용을 수정한다.
         clsBuilder.setSmallIcon(R.drawable.nature)
-                .setContentTitle("방범모드가 활성화 되었습니다").setContentText("농장을 안전하게 감시합니다")
+                .setContentTitle("현재 방범 시퀀스가 작동 중입니다.").setContentText("두 눈 부릅뜨고 농장을 감시하는 중...")
                 .setContentIntent(pendingIntent);
 
         // foreground 서비스로 실행한다.
         startForeground(1, clsBuilder.build());
-
-        // QQQ: 쓰레드 등을 실행하여서 서비스에 적합한 로직을 구현한다.
 
         return START_STICKY;
 
