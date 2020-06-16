@@ -11,7 +11,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /* File Format로 & Logic
     - 날짜별로 1회 촬영
@@ -41,21 +44,31 @@ public class GrowMonitorActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         imageView2 = findViewById(R.id.imageView2);
 
+        //파일 다운로더 클래스
+        DownloadFileTask download = new DownloadFileTask();
 
-        DownloadFileTask down = new DownloadFileTask();
-        down.execute();
+        //오늘의 파일 명 구하기
+        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+        String now = date.format(new Date());
+        String today_filename = now + ".jpg";
+        File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
+        if (!todayFile.exists()) {
+            download.execute();
+        } else {
+            Log.d("file_sync", "파일이 이미 있습니다");
+        }
 
-        try{
+        try {
             String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData/raspi5.jpg";
             File file2 = new File(newFilePath);
 
-            if(file2.exists()){
+            if (file2.exists()) {
                 Bitmap bitmap2 = BitmapFactory.decodeFile(file2.getAbsolutePath());
                 Log.d("test_img_saving", file2.getAbsolutePath());
                 imageView2.setImageBitmap(bitmap2);
             }
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -76,9 +89,13 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "Connection 실패");
             }
 
-            currentPath = ConnectFTP.ftpGetDirectory();
+            SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+            String now = date.format(new Date());
+            String today_filename = now + ".jpg";
 
-            newFilePath += "/raspi.jpg";
+            currentPath = ConnectFTP.ftpGetDirectory();
+            newFilePath += "/" + today_filename;
+
             try {
                 if (!file.exists()) {
                     file.mkdir();
@@ -89,7 +106,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "실패");
             }
 
-            ConnectFTP.ftpDownloadFile(currentPath + "/Pictures/test3.jpg", newFilePath);
+            ConnectFTP.ftpDownloadFile(currentPath + "/Pictures/" + today_filename, newFilePath);
             ConnectFTP.ftpDisconnect(); //CCTV Activity에서 RTSP 통신해줘야하기 때문에 FTP Close함
 
             return null;
