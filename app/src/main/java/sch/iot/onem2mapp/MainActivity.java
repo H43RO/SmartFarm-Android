@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                         //Skip
                                     } else {
                                         last_detected_time = current_detected_time;
-                                        Toast.makeText(getApplicationContext(), "방금 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "최근에 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
 
                                         wildlife_status.setText("최근 농장에 야생동물이 접근했습니다");
                                         wildlife_time.setText(last_detected_time);
@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 } else {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "detected")
                             .setSmallIcon(R.drawable.alert)
-                            .setContentTitle("침입이 감지되었습니다!")
+                            .setContentTitle("농장에 침입이 감지되었습니다!")
                             .setContentText("탭하여 CCTV 확인하기")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                             .setContentIntent(pendingIntent)

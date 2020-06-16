@@ -52,6 +52,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
         if(!file.exists()){
             file.mkdir();
         }
+
         file = new File(Environment.getExternalStorageDirectory()+"/CCTV", filename);
 
         FileOutputStream os;
@@ -67,7 +68,6 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
         view.setDrawingCacheEnabled(false);
         return file;
     }
-
 
     @Override
     public void onClick(View v) {
@@ -147,7 +147,6 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                     File screenShot = ScreenShot(webView);
                     if(screenShot!=null){
                         //갤러리에 추가
-                        Log.d("screen_test","캡쳐성공");
                         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
                         Toast.makeText(this,"CCTV가 캡쳐되었습니다!", Toast.LENGTH_LONG).show();
                     }else{

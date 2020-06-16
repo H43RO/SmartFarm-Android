@@ -13,6 +13,13 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 
+/* File Format로 & Logic
+    - 날짜별로 1회 촬영
+    - YYYYMMDD.jpg 로 저장 ex) 20200616.jpg
+    - Android 단에서 해당 날짜 파일 존재하지 않을 시 동기화 함 (FTP Client 통해서 사진 다운드)
+    - 파일명 (날짜순)으로 정렬하여 ArrayList<String>에 파일 경로를 넣어서 RecyclerView Adpater 연결
+ */
+
 public class GrowMonitorActivity extends AppCompatActivity {
     private ConnectFTP ConnectFTP = new ConnectFTP();
     final String TAG = "Activity FTP";
@@ -44,7 +51,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
             if(file2.exists()){
                 Bitmap bitmap2 = BitmapFactory.decodeFile(file2.getAbsolutePath());
-                Log.d("test_img", file2.getAbsolutePath());
+                Log.d("test_img_saving", file2.getAbsolutePath());
                 imageView2.setImageBitmap(bitmap2);
             }
 
@@ -62,11 +69,13 @@ public class GrowMonitorActivity extends AppCompatActivity {
             String username = "pi";
             String password = "rlaguswns5";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
+
             if (status == true) {
                 Log.d(TAG, "Connection 성공");
             } else {
                 Log.d(TAG, "Connection 실패");
             }
+
             currentPath = ConnectFTP.ftpGetDirectory();
 
             newFilePath += "/raspi.jpg";
@@ -90,9 +99,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-
-            Toast.makeText(getApplicationContext(), "다운 성공", Toast.LENGTH_LONG).show();
-
+            Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
 
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
