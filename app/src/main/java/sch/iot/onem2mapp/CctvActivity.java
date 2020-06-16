@@ -77,60 +77,24 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.ledOnButton:
                 if(((ToggleButton) v).isChecked()){
                     led_on_off.setText("LED ON");
-                    MainActivity.ControlRequest redOn = new MainActivity.ControlRequest("1");
-                    redOn.setReceiver(new MainActivity.IReceived() {
+                    MainActivity.ControlRequest On = new MainActivity.ControlRequest("10");
+                    On.setReceiver(new MainActivity.IReceived() {
                         @Override
                         public void getResponseBody(String msg) {
 
                         }
                     });
-                    redOn.start();
-
-                    MainActivity.ControlRequest greenOn = new MainActivity.ControlRequest("3");
-                    greenOn.setReceiver(new MainActivity.IReceived() {
-                        @Override
-                        public void getResponseBody(String msg) {
-
-                        }
-                    });
-                    greenOn.start();
-
-                    MainActivity.ControlRequest blueOn = new MainActivity.ControlRequest("5");
-                    blueOn.setReceiver(new MainActivity.IReceived() {
-                        @Override
-                        public void getResponseBody(String msg) {
-
-                        }
-                    });
-                    blueOn.start();
+                    On.start();
                 }else{
                     led_on_off.setText("LED OFF");
-                    MainActivity.ControlRequest redOff = new MainActivity.ControlRequest("2");
-                    redOff.setReceiver(new MainActivity.IReceived() {
+                    MainActivity.ControlRequest Off = new MainActivity.ControlRequest("0");
+                    Off.setReceiver(new MainActivity.IReceived() {
                         @Override
                         public void getResponseBody(String msg) {
 
                         }
                     });
-                    redOff.start();
-
-                    MainActivity.ControlRequest greenOff = new MainActivity.ControlRequest("4");
-                    greenOff.setReceiver(new MainActivity.IReceived() {
-                        @Override
-                        public void getResponseBody(String msg) {
-
-                        }
-                    });
-                    greenOff.start();
-
-                    MainActivity.ControlRequest blueOff = new MainActivity.ControlRequest("6");
-                    blueOff.setReceiver(new MainActivity.IReceived() {
-                        @Override
-                        public void getResponseBody(String msg) {
-
-                        }
-                    });
-                    blueOff.start();
+                    Off.start();
                 }
                 break;
 

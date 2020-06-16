@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -23,7 +22,6 @@ import java.util.Locale;
         - Android 단에서 해당 날짜 파일 존재하지 않을 시 동기화 함 (FTP Client 통해서 사진 다운드)
         - 파일명 (날짜순)으로 정렬하여 ArrayList<String>에 파일 경로를 넣어서 RecyclerView Adpater 연결
  */
-
 
 public class GrowMonitorActivity extends AppCompatActivity {
     private ConnectFTP ConnectFTP = new ConnectFTP();
@@ -58,13 +56,13 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
 
         if (!todayFile.exists()) {
-            download.execute(); //라파이에 없으면 그냥 넘어가게 해놓음
+            download.execute(); //라즈베리파이 서에 없으면 그냥 넘어가게 해놓음
         }
 
-        Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
 
-        //파일 동기화가 끝나면 그때 RecyclerView를 보여준다
-        //우선은, 최근 7일까지 사진을 띄울 수 있도록 해보자.
+//        파일 동기화가 끝나면 그때 RecyclerView를 보여준다
+//        우선은, 최근 7일까지 사진을 띄울 수 있도록 해보자.
 
         try {
             String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData/raspi5.jpg";
