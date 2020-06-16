@@ -11,18 +11,20 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 public class GrowMonitorActivity extends AppCompatActivity {
     private ConnectFTP ConnectFTP = new ConnectFTP();
     final String TAG = "Activity FTP";
     String currentPath;
     ImageView imageView;
-    public List<Bitmap> image_list;
+    ImageView imageView2;
+
+    public ArrayList<Bitmap> photos;
+    String strImage;
 
     String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     File file = new File(newFilePath);
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,25 @@ public class GrowMonitorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_grow_monitor);
 
         imageView = findViewById(R.id.imageView);
+        imageView2 = findViewById(R.id.imageView2);
+
+
         DownloadFileTask down = new DownloadFileTask();
         down.execute();
+
+        try{
+            String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData/raspi5.jpg";
+            File file2 = new File(newFilePath);
+
+            if(file2.exists()){
+                Bitmap bitmap2 = BitmapFactory.decodeFile(file2.getAbsolutePath());
+                Log.d("test_img", file2.getAbsolutePath());
+                imageView2.setImageBitmap(bitmap2);
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
@@ -50,10 +69,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
             }
             currentPath = ConnectFTP.ftpGetDirectory();
 
-
-            newFilePath += "/raspi5.jpg";
+            newFilePath += "/raspi.jpg";
             try {
-                if(!file.exists()){
+                if (!file.exists()) {
                     file.mkdir();
                 }
                 file = new File(newFilePath);
@@ -62,7 +80,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "실패");
             }
 
-            ConnectFTP.ftpDownloadFile(currentPath + "/2020-06-11-081018_1920x1080_scrot.png", newFilePath);
+            ConnectFTP.ftpDownloadFile(currentPath + "/Pictures/test3.jpg", newFilePath);
             ConnectFTP.ftpDisconnect(); //CCTV Activity에서 RTSP 통신해줘야하기 때문에 FTP Close함
 
             return null;
@@ -71,11 +89,16 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+
             Toast.makeText(getApplicationContext(), "다운 성공", Toast.LENGTH_LONG).show();
 
+
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            Log.d("test_img",file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
+
+
         }
     }
+
 }
