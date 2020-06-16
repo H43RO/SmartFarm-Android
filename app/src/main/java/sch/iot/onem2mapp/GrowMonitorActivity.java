@@ -1,5 +1,6 @@
 package sch.iot.onem2mapp;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -16,12 +17,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-/* File Format로 & Logic
-    - 날짜별로 1회 촬영
-    - YYYYMMDD.jpg 로 저장 ex) 20200616.jpg
-    - Android 단에서 해당 날짜 파일 존재하지 않을 시 동기화 함 (FTP Client 통해서 사진 다운드)
-    - 파일명 (날짜순)으로 정렬하여 ArrayList<String>에 파일 경로를 넣어서 RecyclerView Adpater 연결
+/*  File Format로 & Logic
+        - 날짜별로 1회 촬영
+        - YYYYMMDD.jpg 로 저장 ex) 20200616.jpg
+        - Android 단에서 해당 날짜 파일 존재하지 않을 시 동기화 함 (FTP Client 통해서 사진 다운드)
+        - 파일명 (날짜순)으로 정렬하여 ArrayList<String>에 파일 경로를 넣어서 RecyclerView Adpater 연결
  */
+
 
 public class GrowMonitorActivity extends AppCompatActivity {
     private ConnectFTP ConnectFTP = new ConnectFTP();
@@ -29,9 +31,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
     String currentPath;
     ImageView imageView;
     ImageView imageView2;
+    public ProgressDialog progressDialog;
+    public ArrayList<String> photo_path; //갤러리에 있는 모든 사진들에 대한 Path를 저장하여 Adapting 함
 
-    public ArrayList<Bitmap> photos;
-    String strImage;
 
     String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     File file = new File(newFilePath);
@@ -51,12 +53,18 @@ public class GrowMonitorActivity extends AppCompatActivity {
         SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
         String now = date.format(new Date());
         String today_filename = now + ".jpg";
+
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
+
+
         if (!todayFile.exists()) {
-            download.execute();
-        } else {
-            Log.d("file_sync", "파일이 이미 있습니다");
+            download.execute(); //라파이에 없으면 그냥 넘어가게 해놓음
         }
+
+        Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
+
+        //파일 동기화가 끝나면 그때 RecyclerView를 보여준다
+        //우선은, 최근 7일까지 사진을 띄울 수 있도록 해보자.
 
         try {
             String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData/raspi5.jpg";
@@ -67,13 +75,26 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d("test_img_saving", file2.getAbsolutePath());
                 imageView2.setImageBitmap(bitmap2);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
+
+        ProgressDialog asyncDialog = new ProgressDialog(
+                GrowMonitorActivity.this);
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("서버와 동기화 중입니다");
+
+            // show dialog
+            asyncDialog.show();
+        }
 
         @Override
         protected Void doInBackground(String... strings) {
@@ -102,6 +123,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 }
                 file = new File(newFilePath);
                 file.createNewFile();
+                Thread.sleep(1000);
             } catch (Exception e) {
                 Log.d(TAG, "실패");
             }
@@ -114,14 +136,10 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
-
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             imageView.setImageBitmap(bitmap);
-
-
+            asyncDialog.dismiss();
+            super.onPostExecute(aVoid);
         }
     }
 
