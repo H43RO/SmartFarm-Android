@@ -32,7 +32,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
     public ProgressDialog progressDialog;
     public ArrayList<String> photo_path; //갤러리에 있는 모든 사진들에 대한 Path를 저장하여 Adapting 함
 
-
     String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     File file = new File(newFilePath);
 
@@ -56,7 +55,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
 
         if (!todayFile.exists()) {
-            download.execute(); //라즈베리파이 서에 없으면 그냥 넘어가게 해놓음
+            download.execute(); //라즈베리파이 서버에 없으면 그냥 넘어가게 해놓음
         }
 
 //        Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
