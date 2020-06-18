@@ -49,6 +49,12 @@ public class GrowMonitorActivity extends AppCompatActivity {
     String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     File file = new File(newFilePath);
 
+
+    ArrayList<String> data = new ArrayList<String>();
+    SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+    String check_date = today.format(new Date()); //초기엔 오늘 날짜 들어있음
+    File checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,25 +93,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setNestedScrollingEnabled(false);
 
-        ArrayList<String> data = new ArrayList<String>();
 
         //변수명 SimpleDataFormat date, String now에 오늘 날짜 들어있음
-        SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
-        String check_date = today.format(new Date()); //초기엔 오늘 날짜 들어있음
-        File checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
 
-        while(checkFile.exists()){
-            data.add(check_date);
-            //날짜를 하나씩 줄이면서 데이터 추가함
-            int temp = Integer.parseInt(check_date);
-            temp--;
-            check_date = String.valueOf(temp);
-            checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
-        }
-
-        Log.d("checkDate", "ㅋㅋ 끝남ㅅㄱ");
-        adapter = new RecyclerAdapter(data);
-        recyclerView.setAdapter(adapter);
     }
 
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
@@ -164,16 +154,20 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
-            Glide.with(getApplicationContext())
-                    .load(file)
-                    .thumbnail(0.1f)
-                    .override(2000,1500)
-                    .into(imageView);
-
             asyncDialog.dismiss();
-
             super.onPostExecute(aVoid);
+
+            while(checkFile.exists()){
+                data.add(check_date);
+                //날짜를 하나씩 줄이면서 데이터 추가함
+                int temp = Integer.parseInt(check_date);
+                temp--;
+                check_date = String.valueOf(temp);
+                checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
+            }
+
+            adapter = new RecyclerAdapter(data);
+            recyclerView.setAdapter(adapter);
         }
     }
 
