@@ -3,11 +3,12 @@ package sch.iot.onem2mapp;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingActivity extends AppCompatActivity implements Button.OnClickListener {
 
@@ -31,11 +32,12 @@ public class SettingActivity extends AppCompatActivity implements Button.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
+        rpi_address_edit = findViewById(R.id.rpi_address_edit_text);
+        ae_name_edit = findViewById(R.id.ae_name_edit_text);
+
         preEditor = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit();
         pref = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        rpi_address_edit = findViewById(R.id.rpi_address_edit_text);
-        ae_name_edit = findViewById(R.id.ae_name_edit_text);
 
         confirm_address = findViewById(R.id.rpi_address_confirm_button);
         confirm_ae = findViewById(R.id.ae_name_confirm_button);
