@@ -7,8 +7,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -29,6 +35,11 @@ public class GrowMonitorActivity extends AppCompatActivity {
     String currentPath;
     ImageView imageView;
     ImageView imageView2;
+
+    RecyclerView recyclerView = findViewById(R.id.recycler_view);
+    RecyclerView.Adapter adapter;
+    RecyclerView.LayoutManager layoutManager;
+
     public ProgressDialog progressDialog;
     public ArrayList<String> photo_path; //갤러리에 있는 모든 사진들에 대한 Path를 저장하여 Adapting 함
 
@@ -40,9 +51,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grow_monitor);
 
-        imageView = findViewById(R.id.imageView);
-        imageView2 = findViewById(R.id.imageView2);
-
         //파일 다운로더 클래스
         DownloadFileTask download = new DownloadFileTask();
 
@@ -53,15 +61,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
 
-
         if (!todayFile.exists()) {
             download.execute(); //라즈베리파이 서버에 없으면 그냥 넘어가게 해놓음
         }
-
-//        Toast.makeText(getApplicationContext(), "동기화 성공", Toast.LENGTH_LONG).show();
-
-//        파일 동기화가 끝나면 그때 RecyclerView를 보여준다
-//        우선은, 최근 7일까지 사진을 띄울 수 있도록 해보자.
 
         try {
             String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData/raspi5.jpg";
@@ -75,6 +77,19 @@ public class GrowMonitorActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        ArrayList<String> data = new ArrayList<String>();
+        data.add("20200612");
+        data.add("20200613");
+        data.add("20200614");
+        data.add("20200615");
+
+        adapter = new RecyclerAdapter(data);
+        recyclerView.setAdapter(adapter);
     }
 
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
@@ -96,7 +111,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             boolean status = false;
-            String host = "192.168.0.246";
+            String host = "114.71.220.108";
             String username = "pi";
             String password = "rlaguswns5";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
@@ -137,6 +152,56 @@ public class GrowMonitorActivity extends AppCompatActivity {
             imageView.setImageBitmap(bitmap);
             asyncDialog.dismiss();
             super.onPostExecute(aVoid);
+        }
+    }
+
+    public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+        private ArrayList<String> grow_image_date;
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public View view;
+            public ViewHolder(View v) {
+                super(v);
+                view = v;
+            }
+        }
+
+        public RecyclerAdapter(ArrayList<String> grow_image) {
+            grow_image = grow_image;
+        }
+
+        // Create new views (invoked by the layout manager)
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            ViewHolder holder = new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.grow_data_item, parent, false));
+            return holder;
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            TextView title = holder.view.findViewById(R.id.title_date);
+            ImageView image = holder.view.findViewById(R.id.image);
+
+            //DataSet에는 이미지의 날짜 들어있음
+
+            String imagePath = Environment.getExternalStorageDirectory() + "/GrowUpData/" + grow_image_date.get(position) + ".jpg";
+
+            File file = new File(imagePath);
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            image.setImageBitmap(bitmap);
+
+            String year = grow_image_date.get(position).substring(0,3);
+            String month = grow_image_date.get(position).substring(4,5);
+            String day = grow_image_date.get(position).substring(6,7);
+
+            String date = year + "년 " + month + "월 " + day + "일";
+            title.setText(date);
+        }
+
+        // Return the size of your dataset (invoked by the layout manager)
+        @Override
+        public int getItemCount() {
+            return grow_image_date.size();
         }
     }
 
