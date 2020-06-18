@@ -6,15 +6,16 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
     ImageView imageView;
     ImageView imageView2;
 
-    RecyclerView recyclerView = findViewById(R.id.recycler_view);
+    RecyclerView recyclerView;
     RecyclerView.Adapter adapter;
     RecyclerView.LayoutManager layoutManager;
 
@@ -78,15 +79,17 @@ public class GrowMonitorActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         ArrayList<String> data = new ArrayList<String>();
-        data.add("20200612");
-        data.add("20200613");
-        data.add("20200614");
+        //이런식으로 오늘 날짜 구해서 역순으로 리스트에 저장하면 될 듯
         data.add("20200615");
+        data.add("20200614");
+        data.add("20200613");
+        data.add("20200612");
 
         adapter = new RecyclerAdapter(data);
         recyclerView.setAdapter(adapter);
@@ -167,7 +170,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
         }
 
         public RecyclerAdapter(ArrayList<String> grow_image) {
-            grow_image = grow_image;
+            this.grow_image_date = grow_image;
         }
 
         // Create new views (invoked by the layout manager)
@@ -190,12 +193,16 @@ public class GrowMonitorActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             image.setImageBitmap(bitmap);
 
-            String year = grow_image_date.get(position).substring(0,3);
-            String month = grow_image_date.get(position).substring(4,5);
-            String day = grow_image_date.get(position).substring(6,7);
+            if(!file.exists()){
+                title.setText("데이터가 존재하지 않습니다");
+            }else{
+                String year = grow_image_date.get(position).substring(0,4);
+                String month = grow_image_date.get(position).substring(4,6);
+                String day = grow_image_date.get(position).substring(6,8);
 
-            String date = year + "년 " + month + "월 " + day + "일";
-            title.setText(date);
+                String date = year + "년 " + month + "월 " + day + "일";
+                title.setText(date);
+            }
         }
 
         // Return the size of your dataset (invoked by the layout manager)
