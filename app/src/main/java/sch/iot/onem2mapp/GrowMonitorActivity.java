@@ -88,12 +88,22 @@ public class GrowMonitorActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
 
         ArrayList<String> data = new ArrayList<String>();
-        //이런식으로 오늘 날짜 구해서 역순으로 리스트에 저장하면 될 듯
-        data.add("20200615");
-        data.add("20200614");
-        data.add("20200613");
-        data.add("20200612");
 
+        //변수명 SimpleDataFormat date, String now에 오늘 날짜 들어있음
+        SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+        String check_date = today.format(new Date()); //초기엔 오늘 날짜 들어있음
+        File checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
+
+        while(checkFile.exists()){
+            data.add(check_date);
+            //날짜를 하나씩 줄이면서 데이터 추가함
+            int temp = Integer.parseInt(check_date);
+            temp--;
+            check_date = String.valueOf(temp);
+            checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
+        }
+
+        Log.d("checkDate", "ㅋㅋ 끝남ㅅㄱ");
         adapter = new RecyclerAdapter(data);
         recyclerView.setAdapter(adapter);
     }
@@ -154,9 +164,15 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            imageView.setImageBitmap(bitmap);
+
+            Glide.with(getApplicationContext())
+                    .load(file)
+                    .thumbnail(0.1f)
+                    .override(2000,1500)
+                    .into(imageView);
+
             asyncDialog.dismiss();
+
             super.onPostExecute(aVoid);
         }
     }
@@ -194,8 +210,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
             String imagePath = Environment.getExternalStorageDirectory() + "/GrowUpData/" + grow_image_date.get(position) + ".jpg";
 
             File file = new File(imagePath);
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-//            image.setImageBitmap(bitmap);
 
             //Using Glide for Image RecyclerView
             Glide.with(getApplicationContext())
