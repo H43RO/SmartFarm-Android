@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,10 +81,11 @@ public class GrowMonitorActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        recyclerView = (RecyclerView)findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setNestedScrollingEnabled(false);
 
         ArrayList<String> data = new ArrayList<String>();
         //이런식으로 오늘 날짜 구해서 역순으로 리스트에 저장하면 될 듯
@@ -163,6 +166,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
+
             public ViewHolder(View v) {
                 super(v);
                 view = v;
@@ -191,14 +195,21 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
             File file = new File(imagePath);
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            image.setImageBitmap(bitmap);
+//            image.setImageBitmap(bitmap);
 
-            if(!file.exists()){
+            //Using Glide for Image RecyclerView
+            Glide.with(getApplicationContext())
+                    .load(file)
+                    .thumbnail(0.1f)
+                    .override(2000,1500)
+                    .into(image);
+
+            if (!file.exists()) {
                 title.setText("데이터가 존재하지 않습니다");
-            }else{
-                String year = grow_image_date.get(position).substring(0,4);
-                String month = grow_image_date.get(position).substring(4,6);
-                String day = grow_image_date.get(position).substring(6,8);
+            } else {
+                String year = grow_image_date.get(position).substring(0, 4);
+                String month = grow_image_date.get(position).substring(4, 6);
+                String day = grow_image_date.get(position).substring(6, 8);
 
                 String date = year + "년 " + month + "월 " + day + "일";
                 title.setText(date);
