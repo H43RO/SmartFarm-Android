@@ -7,10 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -19,6 +15,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,37 +29,34 @@ import java.util.Date;
 import java.util.Locale;
 
 public class CctvActivity extends AppCompatActivity implements Button.OnClickListener {
-    public String src;
-    public TextView led_on_off;
-    public CardView capture_card;
-    public CardView report_card;
-    public CardView setting_card;
-    public WebView webView;
+    private String src;
+    private TextView led_on_off;
+    private CardView capture_card;
+    private CardView report_card;
+    private CardView setting_card;
+    private WebView webView;
 
     //화면 캡쳐하기
     public File ScreenShot(View view){
-        view.setDrawingCacheEnabled(true);  //화면에 뿌릴때 캐시를 사용하게 한다
-
+        view.setDrawingCacheEnabled(true);  //화면에 뿌릴때 캐시를 사용
         Bitmap screenBitmap = view.getDrawingCache();   //캐시를 비트맵으로 변환
-
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
         SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss", Locale.KOREA);
-
         String now = date.format(new Date()) + "_" + time.format(new Date());
         String filename = "farm_" + now + ".jpg";
 
         File file = new File(Environment.getExternalStorageDirectory()+"/CCTV");
 
-        if(!file.exists()){
+        if(!file.exists()){ //폴더가 존재하지 않으면 생성
             file.mkdir();
         }
 
-        file = new File(Environment.getExternalStorageDirectory()+"/CCTV", filename);
-
+        file = new File(Environment.getExternalStorageDirectory()+"/CCTV", filename); //세부 파일명 생성
         FileOutputStream os;
+
         try{
-            os = new FileOutputStream(file);
-            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);   //비트맵을 PNG파일로 변환
+            os = new FileOutputStream(file); //'file'에 쓰기동작을 할 FileOutputStream 초기화
+            screenBitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);   //비트맵을 JPG파일로 변환
             os.close();
         }catch (IOException e){
             e.printStackTrace();
@@ -99,6 +98,7 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
 
             case R.id.capture_card:
 
+                //파일 쓰기 권한 취득 확인
                 if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
                     Log.d("screen_test","권한 부여 안됨");
