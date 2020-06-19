@@ -1,4 +1,5 @@
 package sch.iot.onem2mapp;
+
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,10 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ import java.util.Locale;
  */
 
 public class GrowMonitorActivity extends AppCompatActivity {
-    public ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     private ConnectFTP ConnectFTP = new ConnectFTP();
     private ArrayList<String> data = new ArrayList<String>();
     private SimpleDateFormat today = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
@@ -35,9 +39,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
     private File checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
 
     private String currentPath;
-    private ImageView imageView;
-    private ImageView imageView2;
-
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -47,11 +48,19 @@ public class GrowMonitorActivity extends AppCompatActivity {
     private String newFilePath = Environment.getExternalStorageDirectory() + "/GrowUpData";
     private File file = new File(newFilePath);
 
+    //다운이 다 되면 RecyclerView를 뿌릴 수 있도록 상태변수를 둠
+    private Boolean download_flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grow_monitor);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setNestedScrollingEnabled(false);
 
         //FTP 파일 다운로더 클래스 생성
         DownloadFileTask download = new DownloadFileTask();
@@ -63,18 +72,27 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
 
-        if (!todayFile.exists()) {
-            download.execute(); //실행해도 만약 라즈베리파이에서 데이터 없으면 그냥 넘어가게 해놓음
-        } //Download 시퀀스가 끝나면 안정적으로 RecyclerView Binding 함 (onPostExecute() 동작)
+        if(!todayFile.exists()){
+            download.execute();
+        }else{
+            while (checkFile.exists()) {
+                data.add(check_date);
+                //날짜를 하나씩 줄이면서 데이터 추가함
+                int temp = Integer.parseInt(check_date);
+                temp--;
+                check_date = String.valueOf(temp);
+                checkFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", check_date + ".jpg");
+            }
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setNestedScrollingEnabled(false);
-
+            //데이터셋 완성 후 Adapter에 연결 및 ViewHolder Binding
+            adapter = new RecyclerAdapter(data);
+            recyclerView.setAdapter(adapter);
+        }
     }
 
+
+    //실행해도 만약 라즈베리파이에서 데이터 없으면 그냥 넘어가게 해놓음
+    //Download 시퀀스가 끝나면 안정적으로 RecyclerView Binding 함 (onPostExecute() 동작)
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
         //로딩중 다이얼로그
         ProgressDialog asyncDialog = new ProgressDialog(
@@ -151,6 +169,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
             //데이터셋 완성 후 Adapter에 연결 및 ViewHolder Binding
             adapter = new RecyclerAdapter(data);
             recyclerView.setAdapter(adapter);
+
         }
     }
 

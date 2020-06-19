@@ -36,7 +36,7 @@
                 android:layout_weight="1.0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="당신을 위한 스마트 농장 관리 앱"
+                android:text="당신을 위한 똑똑한 농장 관리 앱"
                 android:textColor="#454545"
                 android:textSize="20dp" />
 

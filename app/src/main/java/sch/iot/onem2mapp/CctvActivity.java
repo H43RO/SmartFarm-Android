@@ -156,7 +156,6 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
         setting_card = findViewById(R.id.setting_card);
         setting_card.setOnClickListener(this);
 
-
         WebSettings webSettings;
 
         webView = (WebView)findViewById(R.id.cctv);
