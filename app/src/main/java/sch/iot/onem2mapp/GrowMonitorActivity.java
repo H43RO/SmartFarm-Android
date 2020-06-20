@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -57,7 +58,13 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
     private String pickedDate;
 
+    SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+    String now = date.format(new Date());
 
+    //오늘
+    int now_year = Integer.parseInt(now.substring(0, 4));
+    int now_month = Integer.parseInt(now.substring(4, 6));
+    int now_day = Integer.parseInt(now.substring(6, 8));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,27 +93,8 @@ public class GrowMonitorActivity extends AppCompatActivity {
                 Log.d("index_check" , String.valueOf(index));
                 smoothScroller.setTargetPosition(index);
                 layoutManager.startSmoothScroll(smoothScroller);
-
             }
         };
-
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
-        String now = date.format(new Date());
-        //오늘
-        String now_year = now.substring(0, 4);
-        String now_month = now.substring(4, 6);
-        String now_day = now.substring(6, 8);
-
-        //오늘 날짜로 DatePickerDialog 생성
-        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, Integer.parseInt(now_year),
-                Integer.parseInt(now_month), Integer.parseInt(now_day));
-
-        searchData.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
 
         //FTP 파일 다운로더 클래스 생성
         DownloadFileTask download = new DownloadFileTask();
@@ -132,6 +120,30 @@ public class GrowMonitorActivity extends AppCompatActivity {
             adapter = new RecyclerAdapter(data);
             recyclerView.setAdapter(adapter);
         }
+
+        //첫번째 데이터가 있는 날짜
+        int first_year = Integer.parseInt(data.get(data.size()-1).substring(0, 4));
+        int first_month = Integer.parseInt(data.get(data.size()-1).substring(4, 6));
+        int first_day = Integer.parseInt(data.get(data.size()-1).substring(6, 8));
+
+        //오늘 날짜로 DatePickerDialog 생성
+        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, now_year, now_month, now_day);
+
+        Calendar minDate = Calendar.getInstance();
+        Calendar maxDate = Calendar.getInstance();
+        minDate.set(first_year, first_month-1, first_day);
+        maxDate.set(now_year, now_month-1, now_day);
+
+        dialog.getDatePicker().setMinDate(minDate.getTime().getTime());
+        dialog.getDatePicker().setMaxDate(maxDate.getTime().getTime());
+
+        searchData.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
+
     }
 
     //실행해도 만약 라즈베리파이에서 데이터 없으면 그냥 넘어가게 해놓음
