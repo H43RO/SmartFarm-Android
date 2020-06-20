@@ -90,7 +90,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
         }
     }
 
-
     //실행해도 만약 라즈베리파이에서 데이터 없으면 그냥 넘어가게 해놓음
     //Download 시퀀스가 끝나면 안정적으로 RecyclerView Binding 함 (onPostExecute() 동작)
     private class DownloadFileTask extends AsyncTask<String, Void, Void> {
@@ -113,7 +112,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             boolean status = false;
-            String host = "114.71.220.108";
+            String host = "114.71.220.105";
             String username = "pi";
             String password = "rlaguswns5";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
@@ -169,7 +168,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
             //데이터셋 완성 후 Adapter에 연결 및 ViewHolder Binding
             adapter = new RecyclerAdapter(data);
             recyclerView.setAdapter(adapter);
-
         }
     }
 

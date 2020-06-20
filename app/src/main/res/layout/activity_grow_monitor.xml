@@ -26,14 +26,31 @@
             android:textSize="40dp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+
+        <LinearLayout
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:text="수집된 생장 데이터를 확인합니다."
-            android:textColor="#454545"
-            android:textSize="20dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1.0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수집된 생장 데이터를 확인합니다."
+                android:textColor="#454545"
+                android:textSize="20dp" />
+
+            <ImageView
+                android:id="@+id/to_setting"
+                android:layout_weight="5.0"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_search_24"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
