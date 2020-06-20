@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -83,18 +82,24 @@ public class GrowMonitorActivity extends AppCompatActivity {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 pickedDate = String.format("%d%02d%02d", year, month+1, dayOfMonth);
 
-                if(data.indexOf(pickedDate) == -1){ //데이터가 없는 날짜를 고르면
-                    Toast.makeText(getApplicationContext(),"데이터가 없습니다", Toast.LENGTH_LONG).show();
-                }else{
-                    int index = adapter.getItemCount() - (Integer.parseInt(pickedDate) - Integer.parseInt(data.get(adapter.getItemCount()-1))) - 1;
-                    Log.d("index_check" , String.valueOf(index));
-                    smoothScroller.setTargetPosition(index);
-                    layoutManager.startSmoothScroll(smoothScroller);
-                }
+                int index = adapter.getItemCount() - (Integer.parseInt(pickedDate) - Integer.parseInt(data.get(adapter.getItemCount()-1))) - 1;
+                Log.d("index_check" , String.valueOf(index));
+                smoothScroller.setTargetPosition(index);
+                layoutManager.startSmoothScroll(smoothScroller);
+
             }
         };
 
-        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, 2020, 5, 1);
+        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
+        String now = date.format(new Date());
+        //오늘
+        String now_year = now.substring(0, 4);
+        String now_month = now.substring(4, 6);
+        String now_day = now.substring(6, 8);
+
+        //오늘 날짜로 DatePickerDialog 생성
+        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, Integer.parseInt(now_year),
+                Integer.parseInt(now_month), Integer.parseInt(now_day));
 
         searchData.setOnClickListener(new ImageView.OnClickListener() {
             @Override
@@ -107,10 +112,8 @@ public class GrowMonitorActivity extends AppCompatActivity {
         DownloadFileTask download = new DownloadFileTask();
 
         //오늘의 파일 명 구하기
-        SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
-        String now = date.format(new Date());
-        String today_filename = now + ".jpg";
 
+        String today_filename = now + ".jpg";
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
 
         if (!todayFile.exists()) {
