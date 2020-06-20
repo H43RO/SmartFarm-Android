@@ -22,6 +22,7 @@
             android:id="@+id/capture_card"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="150dp">
@@ -54,6 +55,7 @@
         <androidx.cardview.widget.CardView
             android:layout_marginLeft="4dp"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="150dp">
@@ -88,10 +90,10 @@
 
 
     <LinearLayout
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/report_card"
