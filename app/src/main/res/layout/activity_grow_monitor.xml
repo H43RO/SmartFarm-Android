@@ -43,7 +43,7 @@
                 android:textSize="20dp" />
 
             <ImageView
-                android:id="@+id/to_setting"
+                android:id="@+id/search_data"
                 android:layout_weight="5.0"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_search_24"

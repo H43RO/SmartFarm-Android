@@ -1,5 +1,6 @@
 package sch.iot.onem2mapp;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,11 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +46,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private ImageView searchData;
 
     final String TAG = "Activity FTP";
 
@@ -50,6 +55,10 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
     //다운이 다 되면 RecyclerView를 뿌릴 수 있도록 상태변수를 둠
     private Boolean download_flag = false;
+
+    private String pickedDate;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +70,38 @@ public class GrowMonitorActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setNestedScrollingEnabled(false);
+        searchData = findViewById(R.id.search_data);
+
+        final RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(this) {
+            @Override protected int getVerticalSnapPreference() {
+                return LinearSmoothScroller.SNAP_TO_START;
+            }
+        };
+
+        DatePickerDialog.OnDateSetListener date_pick = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                pickedDate = String.format("%d%02d%02d", year, month+1, dayOfMonth);
+
+                if(data.indexOf(pickedDate) == -1){ //데이터가 없는 날짜를 고르면
+                    Toast.makeText(getApplicationContext(),"데이터가 없습니다", Toast.LENGTH_LONG).show();
+                }else{
+                    int index = adapter.getItemCount() - (Integer.parseInt(pickedDate) - Integer.parseInt(data.get(adapter.getItemCount()-1))) - 1;
+                    Log.d("index_check" , String.valueOf(index));
+                    smoothScroller.setTargetPosition(index);
+                    layoutManager.startSmoothScroll(smoothScroller);
+                }
+            }
+        };
+
+        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, 2020, 5, 1);
+
+        searchData.setOnClickListener(new ImageView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
 
         //FTP 파일 다운로더 클래스 생성
         DownloadFileTask download = new DownloadFileTask();
@@ -72,9 +113,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
 
-        if(!todayFile.exists()){
+        if (!todayFile.exists()) {
             download.execute();
-        }else{
+        } else {
             while (checkFile.exists()) {
                 data.add(check_date);
                 //날짜를 하나씩 줄이면서 데이터 추가함
@@ -177,6 +218,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View view;
+
             public ViewHolder(View v) {
                 super(v);
                 view = v;
