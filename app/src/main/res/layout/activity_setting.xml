@@ -70,6 +70,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
+                    android:textSize="15dp"
                     android:layout_weight="0.5"
                     android:id="@+id/ae_name_edit_text"
                     android:layout_width="match_parent"
@@ -80,7 +81,7 @@
 
                 <Button
                     android:layout_weight="1.5"
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    style="@style/Widget.AppCompat.Button"
                     android:text="변경"
                     android:id="@+id/ae_name_confirm_button"
                     android:layout_width="match_parent"
@@ -126,12 +127,13 @@
                     android:id="@+id/rpi_address_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="http://192.168.0.3:1004/"
+                    android:textSize="15dp"
+                    android:hint="http://iotsmartfarm.iptime.org:1004/"
                     android:layout_marginRight="8dp"
                     android:textColor="#373737" />
 
                 <Button
-                    style="@style/Widget.AppCompat.Button.Colored"
+                    style="@style/Widget.AppCompat.Button"
                     android:layout_weight="1.5"
                     android:text="변경"
                     android:id="@+id/rpi_address_confirm_button"

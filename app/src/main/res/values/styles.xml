@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">#0277bd</item>
-        <item name="colorPrimaryDark">#0277bd</item>
+        <item name="colorPrimary">#505050</item>
+        <item name="colorPrimaryDark">#3E3E3E</item>
         <item name="colorAccent">#58a5f0</item>
         <item name="android:windowFullscreen">true</item>
 
@@ -13,8 +13,9 @@
         <item name="android:editTextStyle">@style/customEditTextFontStyle</item>
         <item name="android:radioButtonStyle">@style/customRadioButtonFontStyle</item>
         <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
+        <item name="android:datePickerStyle">@style/customDatePickerFontStyle</item>
+
 
     </style>
-
 
 </resources>

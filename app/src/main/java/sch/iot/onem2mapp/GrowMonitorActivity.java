@@ -79,7 +79,8 @@ public class GrowMonitorActivity extends AppCompatActivity {
         searchData = findViewById(R.id.search_data);
 
         final RecyclerView.SmoothScroller smoothScroller = new LinearSmoothScroller(this) {
-            @Override protected int getVerticalSnapPreference() {
+            @Override
+            protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
             }
         };
@@ -87,10 +88,10 @@ public class GrowMonitorActivity extends AppCompatActivity {
         DatePickerDialog.OnDateSetListener date_pick = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                pickedDate = String.format("%d%02d%02d", year, month+1, dayOfMonth);
+                pickedDate = String.format("%d%02d%02d", year, month + 1, dayOfMonth);
 
-                int index = adapter.getItemCount() - (Integer.parseInt(pickedDate) - Integer.parseInt(data.get(adapter.getItemCount()-1))) - 1;
-                Log.d("index_check" , String.valueOf(index));
+                int index = adapter.getItemCount() - (Integer.parseInt(pickedDate) - Integer.parseInt(data.get(adapter.getItemCount() - 1))) - 1;
+                Log.d("index_check", String.valueOf(index));
                 smoothScroller.setTargetPosition(index);
                 layoutManager.startSmoothScroll(smoothScroller);
             }
@@ -100,7 +101,6 @@ public class GrowMonitorActivity extends AppCompatActivity {
         DownloadFileTask download = new DownloadFileTask();
 
         //오늘의 파일 명 구하기
-
         String today_filename = now + ".jpg";
         File todayFile = new File(Environment.getExternalStorageDirectory() + "/GrowUpData/", today_filename);
 
@@ -119,30 +119,29 @@ public class GrowMonitorActivity extends AppCompatActivity {
             //데이터셋 완성 후 Adapter에 연결 및 ViewHolder Binding
             adapter = new RecyclerAdapter(data);
             recyclerView.setAdapter(adapter);
+
+            int first_year = Integer.parseInt(data.get(data.size() - 1).substring(0, 4));
+            int first_month = Integer.parseInt(data.get(data.size() - 1).substring(4, 6));
+            int first_day = Integer.parseInt(data.get(data.size() - 1).substring(6, 8));
+
+            //오늘 날짜로 DatePickerDialog 생성
+            final DatePickerDialog dialog = new DatePickerDialog(this, R.style.DatePicker, date_pick, now_year, now_month, now_day);
+
+            Calendar minDate = Calendar.getInstance();
+            Calendar maxDate = Calendar.getInstance();
+            minDate.set(first_year, first_month - 1, first_day);
+            maxDate.set(now_year, now_month - 1, now_day);
+
+            dialog.getDatePicker().setMinDate(minDate.getTime().getTime());
+            dialog.getDatePicker().setMaxDate(maxDate.getTime().getTime());
+
+            searchData.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.show();
+                }
+            });
         }
-
-        //첫번째 데이터가 있는 날짜
-        int first_year = Integer.parseInt(data.get(data.size()-1).substring(0, 4));
-        int first_month = Integer.parseInt(data.get(data.size()-1).substring(4, 6));
-        int first_day = Integer.parseInt(data.get(data.size()-1).substring(6, 8));
-
-        //오늘 날짜로 DatePickerDialog 생성
-        final DatePickerDialog dialog = new DatePickerDialog(this, date_pick, now_year, now_month, now_day);
-
-        Calendar minDate = Calendar.getInstance();
-        Calendar maxDate = Calendar.getInstance();
-        minDate.set(first_year, first_month-1, first_day);
-        maxDate.set(now_year, now_month-1, now_day);
-
-        dialog.getDatePicker().setMinDate(minDate.getTime().getTime());
-        dialog.getDatePicker().setMaxDate(maxDate.getTime().getTime());
-
-        searchData.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
 
     }
 
