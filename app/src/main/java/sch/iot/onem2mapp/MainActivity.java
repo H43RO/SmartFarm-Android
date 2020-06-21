@@ -720,6 +720,71 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
+    /* Request Control LED */
+    public static class ControlRequestServo extends Thread {
+        private final Logger LOG = Logger.getLogger(ControlRequest.class.getName());
+        private IReceived receiver;
+        //        private String container_name = "cnt-led";
+        private String container_name = "servo";
+
+
+        public ContentInstanceObject contentinstance;
+
+        public ControlRequestServo(String comm) {
+            contentinstance = new ContentInstanceObject();
+            contentinstance.setContent(comm);
+        }
+
+        public void setReceiver(IReceived hanlder) {
+            this.receiver = hanlder;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String sb = csebase.getServiceUrl() + "/" + ServiceAEName + "/" + container_name;
+
+                URL mUrl = new URL(sb);
+
+                HttpURLConnection conn = (HttpURLConnection) mUrl.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setUseCaches(false);
+                conn.setInstanceFollowRedirects(false);
+
+                conn.setRequestProperty("Accept", "application/xml");
+                conn.setRequestProperty("Content-Type", "application/vnd.onem2m-res+xml;ty=4");
+                conn.setRequestProperty("locale", "ko");
+                conn.setRequestProperty("X-M2M-RI", "12345");
+                conn.setRequestProperty("X-M2M-Origin", ae.getAEid());
+
+                String reqContent = contentinstance.makeXML();
+                conn.setRequestProperty("Content-Length", String.valueOf(reqContent.length()));
+
+                DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
+                dos.write(reqContent.getBytes());
+                dos.flush();
+                dos.close();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String resp = "";
+                String strLine = "";
+                while ((strLine = in.readLine()) != null) {
+                    resp += strLine;
+                }
+                if (resp != "") {
+                    receiver.getResponseBody(resp);
+                }
+                conn.disconnect();
+
+            } catch (Exception exp) {
+                LOG.log(Level.SEVERE, exp.getMessage());
+            }
+        }
+    }
+
     /* Request AE Creation */
     class aeCreateRequest extends Thread {
         private final Logger LOG = Logger.getLogger(aeCreateRequest.class.getName());

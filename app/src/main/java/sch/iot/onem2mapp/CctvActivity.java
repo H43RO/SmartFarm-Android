@@ -34,6 +34,9 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
     private CardView capture_card;
     private CardView report_card;
     private CardView setting_card;
+    private CardView turn_left;
+    private CardView turn_right;
+
     private WebView webView;
 
     //화면 캡쳐하기
@@ -96,8 +99,29 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                 }
                 break;
 
-            case R.id.capture_card:
+            case R.id.turn_left:
+                MainActivity.ControlRequestServo left = new MainActivity.ControlRequestServo("21");
+                left.setReceiver(new MainActivity.IReceived() {
+                    @Override
+                    public void getResponseBody(String msg) {
 
+                    }
+                });
+                left.start();
+                break;
+
+            case R.id.turn_right:
+                MainActivity.ControlRequestServo right = new MainActivity.ControlRequestServo("20");
+                right.setReceiver(new MainActivity.IReceived() {
+                    @Override
+                    public void getResponseBody(String msg) {
+
+                    }
+                });
+                right.start();
+                break;
+
+            case R.id.capture_card:
                 //파일 쓰기 권한 취득 확인
                 if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED) {
@@ -116,7 +140,6 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                         Toast.makeText(this,"캡쳐를 실패했습니다", Toast.LENGTH_LONG).show();
                     }
                 }
-
                 break;
 
             case R.id.report_card:
@@ -155,6 +178,11 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
 
         setting_card = findViewById(R.id.setting_card);
         setting_card.setOnClickListener(this);
+
+        turn_left = findViewById(R.id.turn_left);
+        turn_left.setOnClickListener(this);
+        turn_right = findViewById(R.id.turn_right);
+        turn_right.setOnClickListener(this);
 
         WebSettings webSettings;
 

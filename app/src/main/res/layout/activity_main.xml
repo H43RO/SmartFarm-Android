@@ -6,7 +6,6 @@
     android:background="#FFF8F8F8"
     android:orientation="vertical">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
@@ -325,8 +324,6 @@
                     android:text="자동 퇴치 시스템이 가동 중입니다."/>
 
             </LinearLayout>
-
-
 
         </LinearLayout>
 
