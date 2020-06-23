@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -167,9 +166,9 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             boolean status = false;
-            String host = "114.71.220.105";
+            String host = "192.168.0.6";
             String username = "pi";
-            String password = "rlaguswns5";
+            String password = "raspberry";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
 
             if (status == true) {
@@ -198,7 +197,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
             }
 
             //라즈베리파이 서버에 있는 신규 이미지 다운로드
-            ConnectFTP.ftpDownloadFile(currentPath + "/Pictures/" + today_filename, newFilePath);
+            ConnectFTP.ftpDownloadFile(currentPath + "/raspicam_example_without_opencv/build//" + today_filename, newFilePath);
             ConnectFTP.ftpDisconnect(); //CCTV Activity에서 RTSP 통신해줘야하기 때문에 FTP Close
 
             return null;
