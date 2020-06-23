@@ -75,7 +75,7 @@
                     android:id="@+id/ae_name_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="sch20181512"
+                    android:hint="SmartFarm"
                     android:layout_marginRight="8dp"
                     android:textColor="#373737" />
 
