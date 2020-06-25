@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         // Create AE and Get AEID
         GetAEInfo();
 
+        //주기적으로 센서값 폴링해옴
         Timer timer = new Timer();
         final TimerTask TT = new TimerTask() {
             @Override
