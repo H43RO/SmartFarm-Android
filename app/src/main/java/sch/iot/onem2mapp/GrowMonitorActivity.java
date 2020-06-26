@@ -166,7 +166,7 @@ public class GrowMonitorActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... strings) {
             boolean status = false;
-            String host = "192.168.0.6";
+            String host = "192.168.0.8";
             String username = "pi";
             String password = "raspberry";
             status = ConnectFTP.ftpConnect(host, username, password, 21);
