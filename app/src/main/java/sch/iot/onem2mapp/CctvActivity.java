@@ -130,14 +130,13 @@ public class CctvActivity extends AppCompatActivity implements Button.OnClickLis
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             1004);
                 }else{
-                    Log.d("screen_test","권한 부여");
                     File screenShot = ScreenShot(webView);
                     if(screenShot!=null){
                         //갤러리에 추가
                         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                        Toast.makeText(this,"CCTV가 캡쳐되었습니다!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"CCTV 캡쳐되었습니다!", Toast.LENGTH_LONG).show();
                     }else{
-                        Toast.makeText(this,"캡쳐를 실패했습니다", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"캡쳐 실패", Toast.LENGTH_LONG).show();
                     }
                 }
                 break;

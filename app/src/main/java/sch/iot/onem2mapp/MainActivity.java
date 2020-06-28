@@ -239,16 +239,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                     SimpleDateFormat now_format = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 ss초");
                                     current_detected_time = now_format.format(date);
 
-                                    if (current_detected_time.equals(last_detected_time)) {
-                                        //Skip
-                                    } else {
+//                                    if (current_detected_time.equals(last_detected_time)) {
+//                                        //Skip
+//                                    } else {
                                         last_detected_time = current_detected_time;
                                         Toast.makeText(getApplicationContext(), "최근에 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
 
                                         wildlife_status.setText("최근 농장에 야생동물이 접근했습니다");
                                         wildlife_time.setText(last_detected_time);
 
-                                    }
+//                                    }
 
                                 }
 
@@ -431,7 +431,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 Intent intent = new Intent(getApplicationContext(), CctvActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-
 
                 if (Build.VERSION.SDK_INT >= 26) {
 
