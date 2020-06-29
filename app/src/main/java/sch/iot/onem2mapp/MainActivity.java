@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     SharedPreferences.Editor preEditor;
     SharedPreferences pref;
 
-    public Button btnRetrieve;
     public SwitchCompat Switch_MQTT;
     public CardView toCctv;
     public CardView toGrowUp;
@@ -73,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public ImageView toSetting;
 
     public TextView textDust;
-    public TextView textPIR;
-    public TextView textSound;
     public TextView textTemp;
     public TextView textHumid;
     public TextView security_status;
@@ -118,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d("screen_test","권한 부여 안됨");
+            Log.d("screen_test", "권한 부여 안됨");
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     1004);
@@ -229,9 +226,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                             @Override
                             public void run() {
                                 String detected_text = getContainerContentXML(msg);
-                                if(detected_text.equals(last_msg)){
+                                if (detected_text.equals(last_msg)) {
                                     //Skip
-                                }else{
+                                } else {
                                     last_msg = detected_text;
 
                                     long current_time = System.currentTimeMillis();
@@ -243,11 +240,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //                                        //Skip
 //                                    } else {
                                     //기존 값이랑 같으면 스킵하는 코드 추가할 것
-                                        last_detected_time = current_detected_time;
-                                        Toast.makeText(getApplicationContext(), "최근에 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
+                                    last_detected_time = current_detected_time;
+                                    Toast.makeText(getApplicationContext(), "최근에 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
 
-                                        wildlife_status.setText("최근 농장에 야생동물이 접근했습니다");
-                                        wildlife_time.setText(last_detected_time);
+                                    wildlife_status.setText("최근 농장에 야생동물이 접근했습니다");
+                                    wildlife_time.setText(last_detected_time);
 
 //                                    }
 
