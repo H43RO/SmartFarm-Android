@@ -242,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //                                    if (current_detected_time.equals(last_detected_time)) {
 //                                        //Skip
 //                                    } else {
+                                    //기존 값이랑 같으면 스킵하는 코드 추가할 것
                                         last_detected_time = current_detected_time;
                                         Toast.makeText(getApplicationContext(), "최근에 야생동물이 접근했습니다!", Toast.LENGTH_LONG).show();
 

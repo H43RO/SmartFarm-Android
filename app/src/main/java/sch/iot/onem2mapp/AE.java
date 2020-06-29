@@ -17,6 +17,7 @@ public class AE {
     public void setAEid(String aeid){
         this.aeId = aeid;
     }
+    
     public void setAppName(String appname){
         this.appName = appname;
     }
