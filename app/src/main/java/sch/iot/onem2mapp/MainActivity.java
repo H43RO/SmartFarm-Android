@@ -247,13 +247,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                     wildlife_time.setText(last_detected_time);
 
 //                                    }
-
                                 }
 
                             }
                         });
                     }
                 });
+
                 req.start();
             }
         };
@@ -264,9 +264,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     /* AE Create for Androdi AE */
     public void GetAEInfo() {
-        // You can put the IP address directly in code,
-        // but also get it from EditText window
-        // csebase.setInfo(Mobius_Address,"7579","Mobius","1883");
         csebase.setInfo("203.253.128.161", "7579", "Mobius", "1883");
 
         // AE Create for Android AE
