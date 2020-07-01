@@ -507,7 +507,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     };
 
-    // Added by J. Yun, SCH Univ.
     private String getContainerName(String msg) {
         String cnt = "";
         try {
@@ -521,7 +520,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return cnt;
     }
 
-    // Added by J. Yun, SCH Univ.
     private String getContainerContentJSON(String msg) {
         String con = "";
         try {
@@ -539,7 +537,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return con;
     }
 
-    // Added by J. Yun, SCH Univ.
     private String getContainerContentXML(String msg) {
         String con = "";
         try {
